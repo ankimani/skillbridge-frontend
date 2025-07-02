@@ -1,0 +1,389 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { saveStudentProfile } from '../services/studentProfile';
+import { fetchUserProfile } from '../services/authProfile';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import { FiPhone } from 'react-icons/fi';
+import { FiCheckCircle } from 'react-icons/fi';
+import StudentProfileValidation from '../services/StudentProfileValidation';
+
+const StudentBioData = () => {
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        userId: '',
+        fullName: '',
+        gender: '',
+        birthdate: '',
+        location: '',
+        postalCode: '',
+        phoneNumber: '',
+        bio: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [message, setMessage] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    
+    useEffect(() => {
+        const loadUserProfile = async () => {
+            const token = localStorage.getItem("authToken");
+            if (token) {
+                try {
+                    const profile = await fetchUserProfile(token);
+                    setFormData(prev => ({
+                        ...prev,
+                        userId: profile.userId
+                    }));
+                } catch (error) {
+                    setMessage({
+                        type: "error",
+                        text: "Failed to load user information. Please refresh the page."
+                    });
+                }
+            }
+        };
+        loadUserProfile();
+    }, []);
+
+    useEffect(() => {
+        let timer;
+        if (showSuccessModal) {
+            timer = setTimeout(() => {
+                navigate('/studentdashboard');
+            }, 5000);
+        }
+        return () => clearTimeout(timer);
+    }, [showSuccessModal, navigate]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setErrors(prev => ({ ...prev, [name]: undefined }));
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!formData.userId) {
+            setMessage({
+                type: "error",
+                text: "User information not loaded. Please wait or refresh the page."
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
+        const validationErrors = StudentProfileValidation(formData);
+        setErrors(validationErrors);
+
+        if (Object.keys(validationErrors).length === 0) {
+            try {
+                const result = await saveStudentProfile(formData);
+                if (result.success) {
+                    setShowSuccessModal(true);
+                } else {
+                    setMessage({
+                        type: "error",
+                        text: result.error || "Failed to save profile"
+                    });
+                }
+            } catch (error) {
+                setMessage({
+                    type: "error",
+                    text: error.message || "An error occurred"
+                });
+            } finally {
+                setIsSubmitting(false);
+            }
+        } else {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleModalClose = () => {
+        setShowSuccessModal(false);
+        navigate('/studentdashboard');
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+            {/* Success Modal */}
+            {showSuccessModal && (
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                        </div>
+                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                            <div>
+                                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                                    <FiCheckCircle className="h-6 w-6 text-green-600" />
+                                </div>
+                                <div className="mt-3 text-center sm:mt-5">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                                        Profile Completed Successfully!
+                                    </h3>
+                                    <div className="mt-2">
+                                        <p className="text-sm text-gray-500">
+                                            Congratulations on completing your profile! You can now post jobs, connect with professionals, 
+                                            and access all features of SkillBridge.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-5 sm:mt-6">
+                                <button
+                                    type="button"
+                                    onClick={handleModalClose}
+                                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm"
+                                >
+                                    Okay, take me to Dashboard
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="max-w-2xl mx-auto">
+                {/* Banner */}
+                <div className="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4">
+                    <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                            <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm text-blue-700">
+                                You're completing your profile on <strong>SkillBridge</strong> - Connecting students with opportunities
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white shadow rounded-lg p-6 sm:p-8">
+                    <div className="mb-8 text-center">
+                        <h2 className="text-2xl font-bold text-gray-800">Student Profile</h2>
+                        <p className="text-gray-600 mt-2">
+                            Tell us about yourself to complete your profile. This information helps us personalize your experience.
+                        </p>
+                    </div>
+
+                    {message && (
+                        <div className={`mb-6 p-4 rounded-lg ${
+                            message.type === "error" 
+                                ? "bg-red-50 text-red-700" 
+                                : "bg-green-50 text-green-700"
+                        }`}>
+                            {message.text}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* ... rest of your form code remains exactly the same ... */}
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            {/* Full Name */}
+                            <div className="sm:col-span-2">
+                                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Full Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="fullName"
+                                    name="fullName"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    className={`w-full px-4 py-2 border rounded-md ${
+                                        errors.fullName ? 'border-red-300' : 'border-gray-300'
+                                    } focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                                    placeholder="Your full name"
+                                />
+                                {errors.fullName && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                                )}
+                            </div>
+
+                            {/* Gender */}
+                            <div>
+                                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Gender
+                                </label>
+                                <select
+                                    id="gender"
+                                    name="gender"
+                                    value={formData.gender}
+                                    onChange={handleChange}
+                                    className={`w-full px-4 py-2 border rounded-md ${
+                                        errors.gender ? 'border-red-300' : 'border-gray-300'
+                                    } focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                                >
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+                                {errors.gender && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.gender}</p>
+                                )}
+                            </div>
+
+                            {/* Birthdate */}
+                            <div>
+                                <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Date of Birth
+                                </label>
+                                <input
+                                    type="date"
+                                    id="birthdate"
+                                    name="birthdate"
+                                    value={formData.birthdate}
+                                    onChange={handleChange}
+                                    className={`w-full px-4 py-2 border rounded-md ${
+                                        errors.birthdate ? 'border-red-300' : 'border-gray-300'
+                                    } focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                                />
+                                {errors.birthdate && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.birthdate}</p>
+                                )}
+                            </div>
+
+                            {/* Location */}
+                            <div>
+                                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                                    City/Region
+                                </label>
+                                <input
+                                    type="text"
+                                    id="location"
+                                    name="location"
+                                    value={formData.location}
+                                    onChange={handleChange}
+                                    className={`w-full px-4 py-2 border rounded-md ${
+                                        errors.location ? 'border-red-300' : 'border-gray-300'
+                                    } focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                                    placeholder="Your location"
+                                />
+                                {errors.location && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.location}</p>
+                                )}
+                            </div>
+
+                            {/* Postal Code */}
+                            <div>
+                                <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Postal/Zip Code
+                                </label>
+                                <input
+                                    type="text"
+                                    id="postalCode"
+                                    name="postalCode"
+                                    value={formData.postalCode}
+                                    onChange={handleChange}
+                                    className={`w-full px-4 py-2 border rounded-md ${
+                                        errors.postalCode ? 'border-red-300' : 'border-gray-300'
+                                    } focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                                    placeholder="Postal code"
+                                />
+                                {errors.postalCode && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>
+                                )}
+                            </div>
+
+                            {/* Phone Number */}
+                            <div className="sm:col-span-2">
+                                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Phone Number
+                                </label>
+                                <div className="mt-1 relative">
+                                    <PhoneInput
+                                        country={'us'}
+                                        value={formData.phoneNumber}
+                                        onChange={(phone) => {
+                                            setErrors(prev => ({ ...prev, phoneNumber: undefined }));
+                                            setFormData({ ...formData, phoneNumber: phone });
+                                        }}
+                                        inputProps={{
+                                            name: "phoneNumber",
+                                            id: "phoneNumber",
+                                            className: `block w-full pl-12 py-2 rounded-md border ${
+                                                errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
+                                            } shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm`,
+                                        }}
+                                        containerStyle={{
+                                            width: '100%',
+                                        }}
+                                        inputStyle={{
+                                            width: '100%',
+                                            height: '38px',
+                                            paddingLeft: '48px',
+                                        }}
+                                        buttonStyle={{
+                                            height: '38px',
+                                            border: errors.phoneNumber ? '1px solid #fca5a5' : '1px solid #d1d5db',
+                                            borderRight: 'none',
+                                            borderRadius: '0.375rem 0 0 0.375rem',
+                                            backgroundColor: '#f9fafb',
+                                        }}
+                                        dropdownStyle={{
+                                            borderRadius: '0.375rem',
+                                            marginTop: '4px',
+                                            boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+                                        }}
+                                    />
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                        <FiPhone className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                </div>
+                                {errors.phoneNumber && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>
+                                )}
+                            </div>
+
+                            {/* Bio */}
+                            <div className="sm:col-span-2">
+                                <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+                                    About You
+                                </label>
+                                <textarea
+                                    id="bio"
+                                    name="bio"
+                                    rows={4}
+                                    value={formData.bio}
+                                    onChange={handleChange}
+                                    className={`w-full px-4 py-2 border rounded-md ${
+                                        errors.bio ? 'border-red-300' : 'border-gray-300'
+                                    } focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                                    placeholder="Tell us about your academic interests, hobbies, or anything else you'd like to share..."
+                                />
+                                {errors.bio && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.bio}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`px-6 py-2 rounded-md text-white font-medium ${
+                                    isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
+                                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                            >
+                                {isSubmitting ? 'Saving...' : 'Save Profile'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default StudentBioData;
