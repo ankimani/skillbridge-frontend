@@ -1,5 +1,5 @@
 import { getTeacherDetailsByUserId } from "./displayTeacherId";
-const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8089";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
 export const fetchTeacherEducation = async (userId, token) => {
   const response = await fetch(`${BACKEND_BASE_URL}/api/v1/teachers/education/users/${userId}`, {
     headers: {

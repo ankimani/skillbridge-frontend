@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef  } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8089";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
 const EmailVerification = () => {
     const hasRun = useRef(false);
   const [searchParams] = useSearchParams();

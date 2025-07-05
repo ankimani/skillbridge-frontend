@@ -1,6 +1,6 @@
 // src/services/authService.js
 export const loginUser = async (username, password) => {
-    const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8089";
+    const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
     const loginUrl = `${BACKEND_BASE_URL}/api/v1/auth/login`;
     const profileUrl = `${BACKEND_BASE_URL}/api/v1/users/me`;
 

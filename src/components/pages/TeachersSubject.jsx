@@ -18,6 +18,7 @@ const TeachersSubject = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
 
   // Load user profile and teacher ID
   useEffect(() => {
@@ -60,7 +61,7 @@ const TeachersSubject = () => {
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const response = await fetch("http://localhost:8089/api/v1/subjects/all");
+        const response = await fetch(`${BACKEND_BASE_URL}/api/v1/subjects/all`);
         const data = await response.json();
         const options = data.body.data.map(subject => ({
           value: subject.subjectId,

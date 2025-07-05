@@ -1,5 +1,5 @@
 // Add this to your services/teacherProfile.js file (or create it if it doesn't exist)
-const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8089";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
 export const fetchTeachingDetails = async (userId, token) => {
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/teaching/details/teacher/${userId}`, {
       headers: {

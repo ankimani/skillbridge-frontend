@@ -8,11 +8,12 @@ const TutorProfile = ({ teacherId }) => {
   const [tutorData, setTutorData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
 
   useEffect(() => {
     const fetchTutorData = async () => {
       try {
-        const response = await fetch('http://localhost:8089/api/v1/teachers/profile/details/4');
+        const response = await fetch(`${BACKEND_BASE_URL}/api/v1/teachers/profile/details/4`);
         const data = await response.json();
         
         if (data && data.body && data.body.data) {

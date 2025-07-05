@@ -10,7 +10,7 @@ const SidebarFilters = ({ setFilters }) => {
   const [selectedJobStatus, setSelectedJobStatus] = useState(null);
   const [selectedJobTypes, setSelectedJobTypes] = useState([]);
   const [isAllJobsSelected, setIsAllJobsSelected] = useState(false);
-  const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8089";
+  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
   useEffect(() => {
     const formattedCategories = jobCategories.map((category) => ({
       value: category,

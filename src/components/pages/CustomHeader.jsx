@@ -411,7 +411,7 @@ const CustomHeader = () => {
                   Login
                 </Link>
                 <Link 
-                  to="/signup" 
+                  to="/register" 
                   className="px-4 py-2 text-sm font-medium bg-white text-blue-600 rounded-md hover:bg-blue-50 transition-colors"
                 >
                   Sign Up
@@ -576,7 +576,7 @@ const CustomHeader = () => {
                   Login
                 </Link>
                 <Link
-                  to="/signup"
+                  to="/register"
                   className="block w-full text-center px-4 py-2 rounded-md text-base font-medium text-blue-800 bg-white hover:bg-blue-50 transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
