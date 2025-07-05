@@ -3,6 +3,7 @@ const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8089"
 const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1/users`;
 
 export const registerUser = async (userData) => {
+  console.log('backend',process.env.BACKEND_BASE_URL)
   try {
     const response = await fetch(`${API_BASE_URL}/register`, {
       method: 'POST',
