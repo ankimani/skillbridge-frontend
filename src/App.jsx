@@ -115,7 +115,7 @@ function App() {
           <Route path="login" element={<LoginForm />} />
           <Route path="resetlink" element={<ResetPasswordEmail />} />
           <Route path="passwordreset" element={<ResetPassword />} />
-          <Route path="/api/v1/users/account/verify" element={<EmailVerification />} />
+          <Route path="/verify-email" element={<EmailVerification />} />
           
           {/* Admin-only Route */}
           <Route path="admin" element={
