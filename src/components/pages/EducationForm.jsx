@@ -26,6 +26,7 @@ const EducationForm = () => {
   const [message, setMessage] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const loadUserProfileAndTeacherId = async () => {
@@ -63,6 +64,22 @@ const EducationForm = () => {
     loadUserProfileAndTeacherId();
   }, []);
 
+  useEffect(() => {
+    let interval;
+    if (isSubmitting) {
+      interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) return 90; // Cap at 90% until submission completes
+          return prev + 5;
+        });
+      }, 300);
+    } else {
+      setProgress(0);
+    }
+
+    return () => clearInterval(interval);
+  }, [isSubmitting]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -97,6 +114,7 @@ const EducationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setProgress(10); // Start progress
     
     const validationErrors = ValidateEducation(formData);
     setErrors(validationErrors);
@@ -104,6 +122,7 @@ const EducationForm = () => {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await saveEducationDetails(formData);
+        setProgress(100); // Complete progress
 
         if (response.success) {
           setMessage({
@@ -121,13 +140,18 @@ const EducationForm = () => {
         }
       } catch (error) {
         console.error("Error saving education details:", error);
+        setProgress(0);
         setMessage({
           type: "error",
           text: "An error occurred while saving education details",
         });
+      } finally {
+        setIsSubmitting(false);
       }
+    } else {
+      setProgress(0);
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   return (
@@ -358,14 +382,35 @@ const EducationForm = () => {
               </div>
             </div>
 
-            <div className="mt-8 flex justify-between">
+            <div className="mt-8 flex flex-col items-end space-y-4">
+              {isSubmitting && (
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              )}
+              
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Saving...' : 'Save and Continue'}
-                <FiArrowRight className="ml-2" />
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving... ({progress}%)
+                  </>
+                ) : (
+                  <>
+                    Save and Continue
+                    <FiArrowRight className="ml-2" />
+                  </>
+                )}
               </button>
             </div>
           </form>

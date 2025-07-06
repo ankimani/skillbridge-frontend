@@ -21,6 +21,7 @@ const StudentBioData = () => {
         bio: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState(null);
     const [errors, setErrors] = useState({});
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -45,6 +46,22 @@ const StudentBioData = () => {
         };
         loadUserProfile();
     }, []);
+
+    // Progress indicator effect
+    useEffect(() => {
+        let interval;
+        if (isSubmitting) {
+            interval = setInterval(() => {
+                setProgress(prev => {
+                    if (prev >= 90) return 90; // Cap at 90% until submission completes
+                    return prev + 5;
+                });
+            }, 300);
+        } else {
+            setProgress(0);
+        }
+        return () => clearInterval(interval);
+    }, [isSubmitting]);
 
     useEffect(() => {
         let timer;
@@ -77,12 +94,14 @@ const StudentBioData = () => {
         }
 
         setIsSubmitting(true);
+        setProgress(10); // Start progress
         const validationErrors = StudentProfileValidation(formData);
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length === 0) {
             try {
                 const result = await saveStudentProfile(formData);
+                setProgress(100); // Complete progress
                 if (result.success) {
                     setShowSuccessModal(true);
                 } else {
@@ -92,6 +111,7 @@ const StudentBioData = () => {
                     });
                 }
             } catch (error) {
+                setProgress(0);
                 setMessage({
                     type: "error",
                     text: error.message || "An error occurred"
@@ -100,6 +120,7 @@ const StudentBioData = () => {
                 setIsSubmitting(false);
             }
         } else {
+            setProgress(0);
             setIsSubmitting(false);
         }
     };
@@ -186,7 +207,6 @@ const StudentBioData = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* ... rest of your form code remains exactly the same ... */}
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                             {/* Full Name */}
                             <div className="sm:col-span-2">
@@ -368,15 +388,34 @@ const StudentBioData = () => {
                             </div>
                         </div>
 
-                        <div className="flex justify-end">
+                        <div className="flex flex-col items-end space-y-4">
+                            {isSubmitting && (
+                                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div 
+                                        className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+                                        style={{ width: `${progress}%` }}
+                                    ></div>
+                                </div>
+                            )}
+                            
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className={`px-6 py-2 rounded-md text-white font-medium ${
+                                className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
                                     isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
-                                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
                             >
-                                {isSubmitting ? 'Saving...' : 'Save Profile'}
+                                {isSubmitting ? (
+                                    <>
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Saving... ({progress}%)
+                                    </>
+                                ) : (
+                                    'Save Profile'
+                                )}
                             </button>
                         </div>
                     </form>

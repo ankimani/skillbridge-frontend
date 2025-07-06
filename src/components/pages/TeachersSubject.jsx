@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import { FiArrowRight, FiArrowLeft } from 'react-icons/fi';
+import { FiArrowRight, FiArrowLeft, FiCheck } from 'react-icons/fi';
 import ValidateSubject from "../services/ValidateSubject";
 import { saveSubjectDetails } from "../services/subjectService";
 import { fetchUserProfile } from "../services/authProfile";
@@ -11,12 +11,14 @@ const TeachersSubject = () => {
   const [formData, setFormData] = useState({
     userId: null,
     teacherId: null,
-    selectedSubjects: []
+    selectedSubject: null
   });
   const [subjectOptions, setSubjectOptions] = useState([]);
   const [message, setMessage] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [savedSubjects, setSavedSubjects] = useState([]);
   const navigate = useNavigate();
   const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
 
@@ -80,13 +82,30 @@ const TeachersSubject = () => {
     fetchSubjects();
   }, []);
 
-  const handleChange = (selectedOptions) => {
+  // Progress indicator effect
+  useEffect(() => {
+    let interval;
+    if (isSubmitting) {
+      interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) return 90; // Cap at 90% until submission completes
+          return prev + 10;
+        });
+      }, 300);
+    } else {
+      setProgress(0);
+    }
+
+    return () => clearInterval(interval);
+  }, [isSubmitting]);
+
+  const handleChange = (selectedOption) => {
     setFormData((prevData) => ({
       ...prevData,
-      selectedSubjects: selectedOptions || [],
+      selectedSubject: selectedOption,
     }));
-    if (errors.selectedSubjects) {
-      const { selectedSubjects, ...rest } = errors;
+    if (errors.selectedSubject) {
+      const { selectedSubject, ...rest } = errors;
       setErrors(rest);
     }
   };
@@ -94,63 +113,56 @@ const TeachersSubject = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setProgress(10); // Start progress
     
-    const validationErrors = ValidateSubject({ selectedSubjects: formData.selectedSubjects });
+    const validationErrors = ValidateSubject({ selectedSubject: formData.selectedSubject });
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
+      setProgress(0);
       setIsSubmitting(false);
       return;
     }
 
     try {
-      // Submit one subject at a time
-      for (const subject of formData.selectedSubjects) {
-        const updatedFormData = {
-          teacherId: formData.teacherId,
-          userId: formData.userId,
-          subjectId: subject.value,
-        };
-
-        const response = await saveSubjectDetails(updatedFormData);
-
-        if (!response.success) {
-          if (response.error?.includes("The number of subjects cannot exceed")) {
-            setMessage({ type: "error", text: response.error });
-            setTimeout(() => {
-              navigate("/details");
-            }, 3000);
-            setIsSubmitting(false);
-            return;
-          } else {
-            setMessage({
-              type: "error",
-              text: response.error || "Failed to save subject details",
-            });
-            setIsSubmitting(false);
-            return;
-          }
-        }
-      }
-
-      setMessage({
-        type: "success",
-        text: "Subjects saved successfully",
+      const response = await saveSubjectDetails({
+        teacherId: formData.teacherId,
+        userId: formData.userId,
+        subjectId: formData.selectedSubject.value,
       });
 
-      // Reset selected subjects
-      setFormData((prevData) => ({
-        ...prevData,
-        selectedSubjects: [],
-      }));
+      if (!response.success) {
+        if (response.error?.includes("The number of subjects cannot exceed")) {
+          setMessage({ type: "error", text: response.error });
+          setTimeout(() => {
+            navigate("/details");
+          }, 3000);
+        } else {
+          setMessage({
+            type: "error",
+            text: response.error || "Failed to save subject details",
+          });
+        }
+      } else {
+        setMessage({
+          type: "success",
+          text: `${formData.selectedSubject.label} saved successfully`,
+        });
+        setSavedSubjects([...savedSubjects, formData.selectedSubject]);
+        setFormData(prev => ({
+          ...prev,
+          selectedSubject: null
+        }));
+      }
     } catch (error) {
       console.error("Error saving subject details:", error);
       setMessage({
         type: "error",
-        text: "An error occurred while saving subjects",
+        text: "An error occurred while saving subject",
       });
     } finally {
-      setIsSubmitting(false);
+      setProgress(100);
+      setTimeout(() => setIsSubmitting(false), 500);
     }
   };
 
@@ -158,29 +170,16 @@ const TeachersSubject = () => {
     control: (provided, state) => ({
       ...provided,
       minHeight: '50px',
-      borderColor: errors.selectedSubjects ? '#ef4444' : state.isFocused ? '#3b82f6' : '#d1d5db',
-      boxShadow: state.isFocused && !errors.selectedSubjects ? '0 0 0 1px #3b82f6' : 'none',
+      borderColor: errors.selectedSubject ? '#ef4444' : state.isFocused ? '#3b82f6' : '#d1d5db',
+      boxShadow: state.isFocused && !errors.selectedSubject ? '0 0 0 1px #3b82f6' : 'none',
       '&:hover': {
-        borderColor: errors.selectedSubjects ? '#ef4444' : '#9ca3af'
+        borderColor: errors.selectedSubject ? '#ef4444' : '#9ca3af'
       },
     }),
-    multiValue: (provided) => ({
-      ...provided,
-      backgroundColor: '#e0e7ff',
-      borderRadius: '4px',
-    }),
-    multiValueLabel: (provided) => ({
+    singleValue: (provided) => ({
       ...provided,
       color: '#1e40af',
       fontWeight: '500',
-    }),
-    multiValueRemove: (provided) => ({
-      ...provided,
-      color: '#1e40af',
-      ':hover': {
-        backgroundColor: '#93c5fd',
-        color: '#1e3a8a',
-      },
     }),
   };
 
@@ -190,7 +189,7 @@ const TeachersSubject = () => {
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-700">
             <h2 className="text-2xl font-bold text-white">Teaching Expertise</h2>
-            <p className="mt-1 text-sm text-blue-100">Select the subjects you're qualified to teach</p>
+            <p className="mt-1 text-sm text-blue-100">Add subjects you're qualified to teach (one at a time)</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6">
@@ -207,38 +206,78 @@ const TeachersSubject = () => {
             )}
 
             <div className="mb-6">
-              <label htmlFor="subjects" className="block text-sm font-medium text-gray-700 mb-2">
-                Subjects <span className="text-red-500">*</span>
+              <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                Subject <span className="text-red-500">*</span>
               </label>
               <Select
-                id="subjects"
-                name="subjects"
-                options={subjectOptions}
-                isMulti
-                value={formData.selectedSubjects}
+                id="subject"
+                name="subject"
+                options={subjectOptions.filter(option => 
+                  !savedSubjects.some(saved => saved.value === option.value)
+                )}
+                value={formData.selectedSubject}
                 onChange={handleChange}
-                placeholder="Search and select subjects..."
-                className="basic-multi-select"
+                placeholder="Search and select a subject..."
+                className="basic-single-select"
                 classNamePrefix="select"
                 styles={customStyles}
                 noOptionsMessage={() => "No subjects found"}
+                isClearable
               />
-              {errors.selectedSubjects && (
-                <p className="mt-2 text-sm text-red-600">{errors.selectedSubjects}</p>
+              {errors.selectedSubject && (
+                <p className="mt-2 text-sm text-red-600">{errors.selectedSubject}</p>
               )}
               <p className="mt-2 text-sm text-gray-500">
-                Select all subjects you're qualified to teach. You can search by subject name.
+                Select one subject at a time. You can add multiple subjects by saving each one individually.
               </p>
             </div>
 
-            <div className="mt-8 flex justify-between border-t pt-6">
+            {savedSubjects.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Saved Subjects:</h3>
+                <div className="flex flex-wrap gap-2">
+                  {savedSubjects.map((subject, index) => (
+                    <span 
+                      key={index} 
+                      className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium"
+                    >
+                      {subject.label}
+                      <FiCheck className="ml-1" />
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-8 flex flex-col items-end space-y-4 border-t pt-6">
+              {isSubmitting && (
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              )}
+              
               <button
                 type="submit"
-                disabled={isSubmitting || formData.selectedSubjects.length === 0}
+                disabled={isSubmitting || !formData.selectedSubject}
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Saving...' : 'Save and Continue'}
-                <FiArrowRight className="ml-2" />
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving... ({progress}%)
+                  </>
+                ) : (
+                  <>
+                    {savedSubjects.length > 0 ? 'Add Another Subject' : 'Save Subject'}
+                    <FiArrowRight className="ml-2" />
+                  </>
+                )}
               </button>
             </div>
           </form>

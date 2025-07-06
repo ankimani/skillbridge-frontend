@@ -29,6 +29,7 @@ const ProfileInfoForm = () => {
   const [message, setMessage] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -50,6 +51,22 @@ const ProfileInfoForm = () => {
     loadUserProfile();
   }, []);
 
+  useEffect(() => {
+    let interval;
+    if (isSubmitting) {
+      interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) return 90; // Cap at 90% until submission completes
+          return prev + 5;
+        });
+      }, 300);
+    } else {
+      setProgress(0);
+    }
+
+    return () => clearInterval(interval);
+  }, [isSubmitting]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setErrors(prevErrors => ({ ...prevErrors, [name]: undefined }));
@@ -67,12 +84,14 @@ const ProfileInfoForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setProgress(10); // Start progress
     const validationErrors = Validation(formData);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await saveProfileDetails(formData);
+        setProgress(100); // Complete progress
         if (response.success) {
           setMessage({
             type: "success",
@@ -86,6 +105,7 @@ const ProfileInfoForm = () => {
           });
         }
       } catch (error) {
+        setProgress(0);
         setMessage({
           type: "error",
           text: "An error occurred while saving profile details",
@@ -94,6 +114,7 @@ const ProfileInfoForm = () => {
         setIsSubmitting(false);
       }
     } else {
+      setProgress(0);
       setIsSubmitting(false);
     }
   };
@@ -264,54 +285,54 @@ const ProfileInfoForm = () => {
               <h3 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h3>
               
               <div className="sm:col-span-6">
-  <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
-    Phone Number
-  </label>
-  <div className="mt-1 relative">
-    <PhoneInput
-      country={'us'}
-      value={formData.phoneNumber}
-      onChange={(phone) => {
-        setErrors(prev => ({ ...prev, phoneNumber: undefined }));
-        setFormData({ ...formData, phoneNumber: phone });
-      }}
-      inputProps={{
-        name: "phoneNumber",
-        id: "phoneNumber",
-        required: true,
-        className: `block w-full pl-12 py-2 rounded-md border ${
-          errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
-        } shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`,
-      }}
-      containerStyle={{
-        width: '100%',
-      }}
-      inputStyle={{
-        width: '100%',
-        height: '38px',
-        paddingLeft: '48px',
-      }}
-      buttonStyle={{
-        height: '38px',
-        border: errors.phoneNumber ? '1px solid #fca5a5' : '1px solid #d1d5db',
-        borderRight: 'none',
-        borderRadius: '0.375rem 0 0 0.375rem',
-        backgroundColor: '#f9fafb',
-      }}
-      dropdownStyle={{
-        borderRadius: '0.375rem',
-        marginTop: '4px',
-        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-      }}
-    />
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-      <FiPhone className="h-5 w-5 text-gray-400" />
-    </div>
-  </div>
-  {errors.phoneNumber && (
-    <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>
-  )}
-</div>
+                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone Number
+                </label>
+                <div className="mt-1 relative">
+                  <PhoneInput
+                    country={'us'}
+                    value={formData.phoneNumber}
+                    onChange={(phone) => {
+                      setErrors(prev => ({ ...prev, phoneNumber: undefined }));
+                      setFormData({ ...formData, phoneNumber: phone });
+                    }}
+                    inputProps={{
+                      name: "phoneNumber",
+                      id: "phoneNumber",
+                      required: true,
+                      className: `block w-full pl-12 py-2 rounded-md border ${
+                        errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
+                      } shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`,
+                    }}
+                    containerStyle={{
+                      width: '100%',
+                    }}
+                    inputStyle={{
+                      width: '100%',
+                      height: '38px',
+                      paddingLeft: '48px',
+                    }}
+                    buttonStyle={{
+                      height: '38px',
+                      border: errors.phoneNumber ? '1px solid #fca5a5' : '1px solid #d1d5db',
+                      borderRight: 'none',
+                      borderRadius: '0.375rem 0 0 0.375rem',
+                      backgroundColor: '#f9fafb',
+                    }}
+                    dropdownStyle={{
+                      borderRadius: '0.375rem',
+                      marginTop: '4px',
+                      boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+                    }}
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                    <FiPhone className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+                {errors.phoneNumber && (
+                  <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>
+                )}
+              </div>
             </div>
 
             <div>
@@ -338,7 +359,16 @@ const ProfileInfoForm = () => {
             </div>
           </div>
 
-          <div className="mt-8 flex justify-end">
+          <div className="mt-8 flex flex-col items-end space-y-4">
+            {isSubmitting && (
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+            )}
+            
             <button
               type="submit"
               disabled={isSubmitting}
@@ -352,7 +382,7 @@ const ProfileInfoForm = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Processing...
+                  Saving... ({progress}%)
                 </>
               ) : (
                 <>
