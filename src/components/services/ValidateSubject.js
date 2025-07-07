@@ -1,10 +1,9 @@
 export default function ValidateSubject(formData) {
-    const errors = {};
+  const errors = {};
 
-    if (!formData.selectedSubjects || formData.selectedSubjects.length === 0) {
-      errors.selectedSubjects = "At least one subject must be selected";
-    }
-  
-    return errors;
+  if (!formData.selectedSubject) {
+    errors.selectedSubject = "At least one subject must be selected";
   }
-  
+
+  return errors;
+}

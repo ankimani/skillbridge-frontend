@@ -1,8 +1,9 @@
-// TutorRequestService.js
 const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
 const API_URL = `${BACKEND_BASE_URL}/api/v1/post/jobs`;
-const token = localStorage.getItem("authToken");
-const postTutorRequest = async (formData,userId) => {
+
+const postTutorRequest = async (formData, userId) => {
+  const token = localStorage.getItem("authToken");
+  
   const requestBody = {
     userId: userId, 
     location: formData.location,
@@ -13,12 +14,14 @@ const postTutorRequest = async (formData,userId) => {
     jobNature: formData.partTime,
     meetingOptions: formData.meetingOption.join(', '), 
     budget: parseFloat(formData.budget),
-    frequency: formData.rate, 
-    numberOfTutors: formData.tutorCount === 'Only One' ? 1 : 2,
+    frequency: formData.rate === 'Per Hour' ? 'Hourly' : 
+              formData.rate === 'Per Week' ? 'Weekly' :
+              formData.rate === 'Per Month' ? 'Monthly' : 'Fixed',
+    numberOfTutors: formData.tutorCount === 'Only One' ? 1 : 
+                  formData.tutorCount === 'Two' ? 2 : 3,
     jobType: formData.iWant,
     language: formData.languages,
-    jobCategory:formData.jobCategory,
-    profileImg: "", 
+    jobCategory: formData.jobCategory
   };
 
   try {
@@ -32,16 +35,22 @@ const postTutorRequest = async (formData,userId) => {
     });
 
     const result = await response.json();
-    if (response.ok) {
-      console.log('Job posted successfully:', result);
-      return result;
-    } else {
-      console.error('Failed to post job:', result);
-      return null;
-    }
+    
+    // Always return the full response, regardless of status code
+    return {
+      status: response.status,
+      headers: result.headers,
+      body: result.body,
+      ok: response.ok
+    };
+
   } catch (error) {
-    console.error('Error during the fetch request:', error);
-    return null;
+    console.error('Network error during the fetch request:', error);
+    return {
+      status: 0,
+      error: 'Network error',
+      message: error.message
+    };
   }
 };
 

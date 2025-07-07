@@ -15,12 +15,21 @@ export const fetchMyRequirements = async (userId, page = 1, size = 10, token) =>
         },
       }
     );
+
+    const resCode = response.data?.headers?.responseCode;
+
+    if (resCode === 404) {
+      console.warn("No results found");
+      return []; // or [] if you prefer
+    }
+
     return response.data?.body?.data;
   } catch (error) {
     console.error("Failed to fetch requirements:", error);
     throw error;
   }
 };
+
 
 export const closeRequirement = async (jobId, userId, token) => {
   try {

@@ -25,8 +25,6 @@ function TutorRequestForm() {
     partTime: 'Part Time',
     languages: '',
     jobCategory: 'Education & Training',
-    countryScope: 'All countries',
-    tutorsNeeded: 'One Tutor',
     iWant: 'Help with Homework'
   });
 
@@ -63,13 +61,12 @@ function TutorRequestForm() {
     fetchUserId();
   }, []);
 
-  // Progress indicator effect
   useEffect(() => {
     let interval;
     if (isSubmitting) {
       interval = setInterval(() => {
         setProgress(prev => {
-          if (prev >= 90) return 90; // Cap at 90% until submission completes
+          if (prev >= 90) return 90;
           return prev + 5;
         });
       }, 300);
@@ -106,9 +103,8 @@ function TutorRequestForm() {
   const validateForm = () => {
     const newErrors = {};
     const requiredFields = [
-      'location', 'phone', 'requirements', 'subjects', 'level', 'budget', 
-      'languages', 'meetingOption', 'countryScope', 'tutorsNeeded', 'iWant',
-      'jobCategory'
+      'location', 'phone', 'requirements', 'subjects', 'level', 
+      'budget', 'languages', 'jobCategory', 'iWant'
     ];
 
     requiredFields.forEach(field => {
@@ -116,13 +112,18 @@ function TutorRequestForm() {
       if (typeof value === 'string' && value.trim() === '') {
         newErrors[field] = 'This field is required';
       }
-      else if (Array.isArray(value) && value.length === 0) {
-        newErrors[field] = 'Please select at least one option';
-      }
       else if (!value) {
         newErrors[field] = 'This field is required';
       }
     });
+
+    if (formData.meetingOption.length === 0) {
+      newErrors.meetingOption = 'Please select at least one meeting option';
+    }
+
+    if (formData.budget && isNaN(parseFloat(formData.budget))) {
+      newErrors.budget = 'Budget must be a number';
+    }
 
     return newErrors;
   };
@@ -145,49 +146,59 @@ function TutorRequestForm() {
     }
 
     setIsSubmitting(true);
-    setProgress(10); // Start progress
-
+    setProgress(10);
+    
     try {
-      const result = await postTutorRequest(formData, userId);
-      setProgress(100); // Complete progress
+      const response = await postTutorRequest(formData, userId);
+      setProgress(100);
 
-      if (result) {
-        setMessage({
-          text: 'Tutor request posted successfully!',
-          type: 'success'
-        });
-        setFormData({
-          location: '',
-          phone: '',
-          countryCode: '+1',
-          requirements: '',
-          subjects: '',
-          level: '',
-          meetingOption: [],
-          budget: '',
-          rate: 'Per Hour',
-          genderPreference: 'None',
-          tutorCount: 'Only One',
-          partTime: 'Part Time',
-          languages: '',
-          jobCategory: 'Education & Training',
-          countryScope: 'All countries',
-          tutorsNeeded: 'One Tutor',
-          iWant: 'Help with Homework',
-        });
-        setErrors({});
+      if (response) {
+        if (response.ok) {
+          setMessage({
+            text: response.headers?.customerMessage || 'Tutoring request posted successfully!',
+            type: 'success'
+          });
+          // Reset form
+          setFormData({
+            location: '',
+            phone: '',
+            countryCode: '+1',
+            requirements: '',
+            subjects: '',
+            level: '',
+            meetingOption: [],
+            budget: '',
+            rate: 'Per Hour',
+            genderPreference: 'None',
+            tutorCount: 'Only One',
+            partTime: 'Part Time',
+            languages: '',
+            jobCategory: 'Education & Training',
+            iWant: 'Help with Homework'
+          });
+          setErrors({});
+        } else {
+          // Handle 4xx responses
+          setMessage({
+            text: response.headers?.customerMessage || 
+                 response.body?.message || 
+                 'Request completed but with some issues',
+            type: 'warning'
+          });
+        }
       } else {
         setMessage({
-          text: 'Failed to post tutor request. Please try again.',
+          text: 'No response received from server',
           type: 'error'
         });
       }
     } catch (error) {
       setProgress(0);
       setMessage({
-        text: 'An error occurred while submitting your request.',
+        text: 'An unexpected error occurred while submitting your request.',
         type: 'error'
       });
+      console.error('Submission error:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -237,19 +248,18 @@ function TutorRequestForm() {
       
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          {/* Form Header */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
-            <h1 className="text-2xl font-bold text-white">Post a Job/Requirement(s)</h1>
-            <p className="text-blue-100">Fill out the form below to find the perfect professional for your needs</p>
+            <h1 className="text-2xl font-bold text-white">Post a Tutoring Request</h1>
+            <p className="text-blue-100">Fill out the form below to find the perfect tutor for your needs</p>
           </div>
 
-          {/* Form Content */}
           <form onSubmit={handleSubmit} className="p-6 md:p-8">
-            {/* Message Display */}
             {message.text && (
               <div className={`mb-6 p-4 rounded-lg flex items-center ${
                 message.type === 'success' 
                   ? 'bg-green-100 text-green-800' 
+                  : message.type === 'warning'
+                  ? 'bg-yellow-100 text-yellow-800'
                   : 'bg-red-100 text-red-800'
               }`}>
                 {message.type === 'success' ? (
@@ -276,7 +286,7 @@ function TutorRequestForm() {
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.location ? 'border-red-500' : 'border-gray-300'
                   } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                  placeholder="Enter your location"
+                  placeholder="Enter your location (e.g., Nairobi)"
                 />
                 {errors.location && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -293,7 +303,11 @@ function TutorRequestForm() {
                 <Select
                   name="jobCategory"
                   id="jobCategory"
-                  value={jobCategories.find(cat => cat === formData.jobCategory)}
+                  value={
+                    formData.jobCategory
+                      ? { value: formData.jobCategory, label: formData.jobCategory }
+                      : null
+                  }
                   onChange={(selectedOption) => handleSelectChange(selectedOption, { name: 'jobCategory' })}
                   options={jobCategories.map(category => ({
                     value: category,
@@ -342,7 +356,7 @@ function TutorRequestForm() {
                       className={`w-full px-4 py-2 rounded-lg border ${
                         errors.phone ? 'border-red-500' : 'border-gray-300'
                       } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                      placeholder="Phone number"
+                      placeholder="Phone number (e.g., 25411000002)"
                     />
                   </div>
                 </div>
@@ -356,8 +370,7 @@ function TutorRequestForm() {
               {/* Requirements */}
               <div className="md:col-span-2">
                 <label htmlFor="requirements" className="block text-sm font-medium text-gray-700 mb-1">
-                  Details of Your Requirement <span className="text-red-500">*</span>
-                  <span className="text-xs text-gray-500 block">(Do not share your contacts here)</span>
+                  Detailed Requirements <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   name="requirements"
@@ -368,7 +381,7 @@ function TutorRequestForm() {
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.requirements ? 'border-red-500' : 'border-gray-300'
                   } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                  placeholder="Describe your learning needs in detail"
+                  placeholder="Describe your requirements in detail"
                 />
                 {errors.requirements && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -380,7 +393,7 @@ function TutorRequestForm() {
               {/* Subjects */}
               <div className="md:col-span-2">
                 <label htmlFor="subjects" className="block text-sm font-medium text-gray-700 mb-1">
-                  Skills Needed <span className="text-red-500">*</span>
+                  Subjects Needed <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -403,7 +416,7 @@ function TutorRequestForm() {
               {/* Level */}
               <div>
                 <label htmlFor="level" className="block text-sm font-medium text-gray-700 mb-1">
-                  Your Level <span className="text-red-500">*</span>
+                  Education Level <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="level"
@@ -414,16 +427,12 @@ function TutorRequestForm() {
                     errors.level ? 'border-red-500' : 'border-gray-300'
                   } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 >
-                  <option value="">Select your Education level</option>
-                  <option value="Early Childhood Education">University/College</option>
-                  <option value="Primary/Elementary Education">Secondary school</option>
+                  <option value="">Select level</option>
+                  <option value="High School">High School</option>
+                  <option value="University/College">University/College</option>
                   <option value="Middle School/Junior High">Middle School/Junior High</option>
-                  <option value="High School/Secondary School">Early Childhood</option>
+                  <option value="Early Childhood">Early Childhood</option>
                   <option value="Vocational/Technical Schools">Vocational/Technical Schools</option>
-                  <option value="Undergraduate/College">Undergraduate/College</option>
-                  <option value="Masters Degree">Masters Degree</option>
-                  <option value="Doctoral Degree-PhD">Doctoral Degree-PhD</option>
-                  <option value="Other">Others</option>
                 </select>
                 {errors.level && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -446,17 +455,11 @@ function TutorRequestForm() {
                     errors.iWant ? 'border-red-500' : 'border-gray-300'
                   } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 >
+                  <option value="Help with Homework">Help with Homework</option>
                   <option value="Professional Guidance">Professional Guidance</option>
                   <option value="Project">Project</option>
                   <option value="Interview Preparation">Interview Preparation</option>
-                  <option value="School Work">School Work</option>
                   <option value="Exam Preparation">Exam Preparation</option>
-                  <option value="Homework/Assignment">Homework/Assignment</option>
-                  <option value="Improve Grades">Improve Grades</option>
-                  <option value="Thesis">Thesis</option>
-                  <option value="Reserch paper">Research paper</option>
-                  <option value="Academic Writing">Academic Writing</option> 
-                  <option value="Academic Writing">Others</option> 
                 </select>
                 {errors.iWant && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -468,7 +471,7 @@ function TutorRequestForm() {
               {/* Meeting Options */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Job Location <span className="text-red-500">*</span>
+                  Meeting Options <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {['Online', 'At my place', 'Travel to tutor'].map((option) => (
@@ -476,13 +479,16 @@ function TutorRequestForm() {
                       <input
                         type="checkbox"
                         name="meetingOption"
-                        id={option.toLowerCase().replace(' ', '-')}
+                        id={`meeting-${option.toLowerCase().replace(' ', '-')}`}
                         value={option}
                         checked={formData.meetingOption.includes(option)}
                         onChange={handleChange}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
-                      <label htmlFor={option.toLowerCase().replace(' ', '-')} className="ml-2 text-sm text-gray-700">
+                      <label 
+                        htmlFor={`meeting-${option.toLowerCase().replace(' ', '-')}`} 
+                        className="ml-2 text-sm text-gray-700"
+                      >
                         {option}
                       </label>
                     </div>
@@ -495,17 +501,17 @@ function TutorRequestForm() {
                 )}
               </div>
 
-              {/* Budget and Rate */}
+              {/* Budget */}
               <div>
                 <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-1">
-                  Budget <span className="text-red-500">*</span>
+                  Budget ($) <span className="text-red-500">*</span>
                 </label>
                 <div className="relative rounded-md shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span className="text-gray-500 sm:text-sm">$</span>
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     name="budget"
                     id="budget"
                     value={formData.budget}
@@ -514,6 +520,8 @@ function TutorRequestForm() {
                       errors.budget ? 'border-red-500' : 'border-gray-300'
                     } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                     placeholder="0.00"
+                    step="0.01"
+                    min="0"
                   />
                 </div>
                 {errors.budget && (
@@ -523,23 +531,79 @@ function TutorRequestForm() {
                 )}
               </div>
 
+              {/* Rate */}
               <div>
                 <label htmlFor="rate" className="block text-sm font-medium text-gray-700 mb-1">
-                  Rate Frequency
+                  Rate Frequency <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="rate"
                   id="rate"
                   value={formData.rate}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.rate ? 'border-red-500' : 'border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 >
                   <option value="Per Hour">Per Hour</option>
                   <option value="Per Week">Per Week</option>
                   <option value="Per Month">Per Month</option>
                   <option value="Fixed">Fixed</option>
-                  <option value="Per Day">Per Day</option>
                 </select>
+                {errors.rate && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <FaInfoCircle className="mr-1" /> {errors.rate}
+                  </p>
+                )}
+              </div>
+
+              {/* Number of Tutors */}
+              <div>
+                <label htmlFor="tutorCount" className="block text-sm font-medium text-gray-700 mb-1">
+                  Number of Tutors <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="tutorCount"
+                  id="tutorCount"
+                  value={formData.tutorCount}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.tutorCount ? 'border-red-500' : 'border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                >
+                  <option value="Only One">Only One</option>
+                  <option value="Two">Two</option>
+                  <option value="More than Two">More than Two</option>
+                </select>
+                {errors.tutorCount && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <FaInfoCircle className="mr-1" /> {errors.tutorCount}
+                  </p>
+                )}
+              </div>
+
+              {/* Job Nature */}
+              <div>
+                <label htmlFor="partTime" className="block text-sm font-medium text-gray-700 mb-1">
+                  Job Nature <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="partTime"
+                  id="partTime"
+                  value={formData.partTime}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.partTime ? 'border-red-500' : 'border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                >
+                  <option value="Part Time">Part Time</option>
+                  <option value="Full Time">Full Time</option>
+                </select>
+                {errors.partTime && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <FaInfoCircle className="mr-1" /> {errors.partTime}
+                  </p>
+                )}
               </div>
 
               {/* Languages */}
@@ -563,89 +627,6 @@ function TutorRequestForm() {
                     <FaInfoCircle className="mr-1" /> {errors.languages}
                   </p>
                 )}
-              </div>
-
-              {/* Gender Preference */}
-              <div>
-                <label htmlFor="genderPreference" className="block text-sm font-medium text-gray-700 mb-1">
-                  Gender Preference
-                </label>
-                <select
-                  name="genderPreference"
-                  id="genderPreference"
-                  value={formData.genderPreference}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="None">No Preference</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
-
-              {/* Number of Trainers */}
-              <div>
-                <label htmlFor="tutorsNeeded" className="block text-sm font-medium text-gray-700 mb-1">
-                Professionals Needed <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="tutorsNeeded"
-                  id="tutorsNeeded"
-                  value={formData.tutorsNeeded}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-2 rounded-lg border ${
-                    errors.tutorsNeeded ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                >
-                  <option value="One Trainer">One Professional</option>
-                  <option value="More than One Trainer">More than One Professionals</option>
-                </select>
-                {errors.tutorsNeeded && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <FaInfoCircle className="mr-1" /> {errors.tutorsNeeded}
-                  </p>
-                )}
-              </div>
-
-              {/* Scope of Trainer */}
-              <div>
-                <label htmlFor="countryScope" className="block text-sm font-medium text-gray-700 mb-1">
-                  Scope of Professional <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="countryScope"
-                  id="countryScope"
-                  value={formData.countryScope}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-2 rounded-lg border ${
-                    errors.countryScope ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                >
-                  <option value="All countries">All countries</option>
-                  <option value="Only local">Only local</option>
-                </select>
-                {errors.countryScope && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <FaInfoCircle className="mr-1" /> {errors.countryScope}
-                  </p>
-                )}
-              </div>
-
-              {/* Trainer Availability */}
-              <div>
-                <label htmlFor="partTime" className="block text-sm font-medium text-gray-700 mb-1">
-                Professional Availability
-                </label>
-                <select
-                  name="partTime"
-                  id="partTime"
-                  value={formData.partTime}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="Part Time">Part Time</option>
-                  <option value="Full Time">Full Time</option>
-                </select>
               </div>
             </div>
 
@@ -676,7 +657,7 @@ function TutorRequestForm() {
                     Submitting... ({progress}%)
                   </>
                 ) : (
-                  'Submit Request'
+                  'Submit Tutoring Request'
                 )}
               </button>
             </div>

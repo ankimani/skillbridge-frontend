@@ -112,12 +112,14 @@ const TeachersSubject = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("handling skill")
     setIsSubmitting(true);
     setProgress(10); // Start progress
     
     const validationErrors = ValidateSubject({ selectedSubject: formData.selectedSubject });
     setErrors(validationErrors);
-
+    console.log(validationErrors);
+    console.log("skils okay? ",Object.keys(validationErrors).length > 0)
     if (Object.keys(validationErrors).length > 0) {
       setProgress(0);
       setIsSubmitting(false);
@@ -125,11 +127,13 @@ const TeachersSubject = () => {
     }
 
     try {
+      console.log("about to call save")
       const response = await saveSubjectDetails({
         teacherId: formData.teacherId,
         userId: formData.userId,
         subjectId: formData.selectedSubject.value,
       });
+      console.log("response ",response)
 
       if (!response.success) {
         if (response.error?.includes("The number of subjects cannot exceed")) {
@@ -188,8 +192,8 @@ const TeachersSubject = () => {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-700">
-            <h2 className="text-2xl font-bold text-white">Teaching Expertise</h2>
-            <p className="mt-1 text-sm text-blue-100">Add subjects you're qualified to teach (one at a time)</p>
+            <h2 className="text-2xl font-bold text-white">Professional Expertise</h2>
+            <p className="mt-1 text-sm text-blue-100">Add skills you're qualified to teach (one at a time)</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6">
@@ -207,7 +211,7 @@ const TeachersSubject = () => {
 
             <div className="mb-6">
               <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                Subject <span className="text-red-500">*</span>
+                Skills <span className="text-red-500">*</span>
               </label>
               <Select
                 id="subject"
@@ -228,7 +232,7 @@ const TeachersSubject = () => {
                 <p className="mt-2 text-sm text-red-600">{errors.selectedSubject}</p>
               )}
               <p className="mt-2 text-sm text-gray-500">
-                Select one subject at a time. You can add multiple subjects by saving each one individually.
+                Select one skill at a time. You can add multiple skills by saving each one individually.
               </p>
             </div>
 

@@ -35,6 +35,7 @@ const ProfileInfoForm = () => {
     const loadUserProfile = async () => {
       try {
         const token = localStorage.getItem("authToken");
+        console.log("token ", token)
         const profile = await fetchUserProfile(token);
         setFormData(prevData => ({
           ...prevData,
@@ -87,14 +88,15 @@ const ProfileInfoForm = () => {
     setIsSubmitting(true);
     setProgress(10);
     console.log("progress set....")
-     // Start progress
     const validationErrors = Validation(formData);
     setErrors(validationErrors);
-
+    console.log("all fields okay ", Object.keys(validationErrors).length === 0)
+    
     if (Object.keys(validationErrors).length === 0) {
       try {
+        console.log("called save method")
         const response = await saveProfileDetails(formData);
-        console.log("response ",response.data)
+        console.log("response ", response.data)
         setProgress(100); // Complete progress
         if (response.success) {
           setMessage({
@@ -288,54 +290,103 @@ const ProfileInfoForm = () => {
             <div className="border-b border-gray-200 pb-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h3>
               
-              <div className="sm:col-span-6">
-                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number
-                </label>
-                <div className="mt-1 relative">
-                  <PhoneInput
-                    country={'us'}
-                    value={formData.phoneNumber}
-                    onChange={(phone) => {
-                      setErrors(prev => ({ ...prev, phoneNumber: undefined }));
-                      setFormData({ ...formData, phoneNumber: phone });
-                    }}
-                    inputProps={{
-                      name: "phoneNumber",
-                      id: "phoneNumber",
-                      required: true,
-                      className: `block w-full pl-12 py-2 rounded-md border ${
-                        errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
-                      } shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`,
-                    }}
-                    containerStyle={{
-                      width: '100%',
-                    }}
-                    inputStyle={{
-                      width: '100%',
-                      height: '38px',
-                      paddingLeft: '48px',
-                    }}
-                    buttonStyle={{
-                      height: '38px',
-                      border: errors.phoneNumber ? '1px solid #fca5a5' : '1px solid #d1d5db',
-                      borderRight: 'none',
-                      borderRadius: '0.375rem 0 0 0.375rem',
-                      backgroundColor: '#f9fafb',
-                    }}
-                    dropdownStyle={{
-                      borderRadius: '0.375rem',
-                      marginTop: '4px',
-                      boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-                    }}
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                    <FiPhone className="h-5 w-5 text-gray-400" />
+              <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div className="sm:col-span-6">
+                  <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number
+                  </label>
+                  <div className="mt-1 relative">
+                    <PhoneInput
+                      country={'us'}
+                      value={formData.phoneNumber}
+                      onChange={(phone) => {
+                        setErrors(prev => ({ ...prev, phoneNumber: undefined }));
+                        setFormData({ ...formData, phoneNumber: phone });
+                      }}
+                      inputProps={{
+                        name: "phoneNumber",
+                        id: "phoneNumber",
+                        required: true,
+                        className: `block w-full pl-12 py-2 rounded-md border ${
+                          errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
+                        } shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`,
+                      }}
+                      containerStyle={{
+                        width: '100%',
+                      }}
+                      inputStyle={{
+                        width: '100%',
+                        height: '38px',
+                        paddingLeft: '48px',
+                      }}
+                      buttonStyle={{
+                        height: '38px',
+                        border: errors.phoneNumber ? '1px solid #fca5a5' : '1px solid #d1d5db',
+                        borderRight: 'none',
+                        borderRadius: '0.375rem 0 0 0.375rem',
+                        backgroundColor: '#f9fafb',
+                      }}
+                      dropdownStyle={{
+                        borderRadius: '0.375rem',
+                        marginTop: '4px',
+                        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+                      }}
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                      <FiPhone className="h-5 w-5 text-gray-400" />
+                    </div>
                   </div>
+                  {errors.phoneNumber && (
+                    <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>
+                  )}
                 </div>
-                {errors.phoneNumber && (
-                  <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>
-                )}
+
+                <div className="sm:col-span-4">
+                  <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                    Location
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FiMapPin className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      id="location"
+                      name="location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      className={`block w-full pl-10 pr-3 py-2 rounded-md border ${
+                        errors.location ? 'border-red-300' : 'border-gray-300'
+                      } shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                      placeholder="City, State"
+                    />
+                  </div>
+                  {errors.location && (
+                    <p className="mt-1 text-sm text-red-600">{errors.location}</p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
+                    Postal Code
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <input
+                      type="text"
+                      id="postalCode"
+                      name="postalCode"
+                      value={formData.postalCode}
+                      onChange={handleChange}
+                      className={`block w-full px-3 py-2 rounded-md border ${
+                        errors.postalCode ? 'border-red-300' : 'border-gray-300'
+                      } shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                      placeholder="ZIP/Postal Code"
+                    />
+                  </div>
+                  {errors.postalCode && (
+                    <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>
+                  )}
+                </div>
               </div>
             </div>
 
