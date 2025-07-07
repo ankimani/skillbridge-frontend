@@ -85,7 +85,9 @@ const ProfileInfoForm = () => {
     console.log("submit called?....")
     e.preventDefault();
     setIsSubmitting(true);
-    setProgress(10); // Start progress
+    setProgress(10);
+    console.log("progress set....")
+     // Start progress
     const validationErrors = Validation(formData);
     setErrors(validationErrors);
 
