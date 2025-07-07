@@ -5,6 +5,7 @@ const BASE_URL = `${BACKEND_BASE_URL}/api/v1/profiles`;
 
 export const saveProfileDetails = async (formData) => {
   const token = localStorage.getItem("authToken");
+  console.log("formData ",formData)
     try {
       const response = await fetch(`${BASE_URL}/details`, {
         method: 'POST',
