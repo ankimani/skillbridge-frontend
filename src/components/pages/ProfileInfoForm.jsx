@@ -82,6 +82,7 @@ const ProfileInfoForm = () => {
   };
 
   const handleSubmit = async (e) => {
+    console.log("submit called?....")
     e.preventDefault();
     setIsSubmitting(true);
     setProgress(10); // Start progress
@@ -91,6 +92,7 @@ const ProfileInfoForm = () => {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await saveProfileDetails(formData);
+        console.log("response ",response.data)
         setProgress(100); // Complete progress
         if (response.success) {
           setMessage({
