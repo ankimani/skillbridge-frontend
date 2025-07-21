@@ -1,35 +1,56 @@
 import React, { useState } from 'react';
 import { FaEnvelope, FaPaperPlane, FaArrowLeft } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ResetPasswordEmail = () => {
+  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+  const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1/users/request-password-reset`;
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' });
-
-  const handleInputChange = (e) => {
-    setEmail(e.target.value);
-    if (message.text) setMessage({ text: '', type: '' });
-  };
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
+    setMessageType('');
+    
+    if (!email) {
+      setMessageType('error');
+      setMessage('Please enter an email address');
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await axios.post(`${API_BASE_URL}`, { email });
+      console.log("response", response);
       
-      setMessage({
-        text: 'Password reset link has been sent to your email',
-        type: 'success'
-      });
-      setEmail('');
+      if (response.data?.headers?.responseCode === 200) {
+        setMessageType('success');
+        setMessage(response.data.headers.customerMessage || 'Password reset link sent to your email');
+        setTimeout(() => navigate('/login'), 3000); // Navigate after 3 seconds
+      } else {
+        setMessageType('error');
+        setMessage(response.data?.headers?.customerMessage || 'Failed to send reset link');
+      }
     } catch (error) {
-      setMessage({
-        text: 'Failed to send reset link. Please try again.',
-        type: 'error'
-      });
+      let errorMessage = 'Failed to send reset link. Please try again.';
+      
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData?.headers?.customerMessage || 
+                     errorData?.message || 
+                     errorMessage;
+      } else if (error.request) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      }
+      
+      setMessageType('error');
+      setMessage(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -53,18 +74,19 @@ const ResetPasswordEmail = () => {
           </p>
         </div>
 
+        {/* Message display */}
+        {message && (
+          <div className={`p-4 mx-6 mt-4 rounded-md ${
+            messageType === 'success' 
+              ? 'bg-green-50 text-green-700' 
+              : 'bg-red-50 text-red-700'
+          }`}>
+            <p className="text-sm">{message}</p>
+          </div>
+        )}
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {message.text && (
-            <div className={`p-3 rounded-lg text-sm ${
-              message.type === 'success' 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-red-100 text-red-700'
-            }`}>
-              {message.text}
-            </div>
-          )}
-
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
@@ -78,7 +100,7 @@ const ResetPasswordEmail = () => {
                 id="email"
                 name="email"
                 value={email}
-                onChange={handleInputChange}
+                onChange={(e) => setEmail(e.target.value)}
                 className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="your@email.com"
                 required
@@ -120,6 +142,7 @@ const ResetPasswordEmail = () => {
               type="button" 
               className="font-medium text-indigo-600 hover:text-indigo-500"
               onClick={handleSubmit}
+              disabled={isSubmitting || !email}
             >
               Resend link
             </button>

@@ -42,71 +42,74 @@ const CustomHeader = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
+  // Centralized unauthorized handler
+  const handleUnauthorized = () => {
+    localStorage.removeItem('authToken');
+    setIsLoggedIn(false);
+    setUserProfile(null);
+    setCoinBalance(0);
+    setBillingInfo(null);
+    navigate('/login');
+    setProfileOpen(false);
+    setAuthError('Your session has expired. Please login again.');
+  };
+
   // Check authentication status
   const checkAuth = async () => {
-    console.log('Checking auth...');
     setIsCheckingAuth(true);
     
     try {
       const token = localStorage.getItem('authToken');
-      console.log('Token found:', !!token);
-      console.log('Token value:', token); // Debug log to see actual token
-      
       if (!token) {
-        console.log('No token found, setting logged out state');
         setIsLoggedIn(false);
         setUserProfile(null);
         setIsCheckingAuth(false);
         return;
       }
 
-      // Token exists, now verify it by fetching user profile
-      console.log('Token exists, fetching user profile...');
+      // Verify token by fetching user profile
       const profile = await fetchUserProfile(token);
-      console.log('User profile fetched successfully:', profile);
-      
       setUserProfile(profile);
       setIsLoggedIn(true);
-      console.log('isLoggedIn set to: true');
       
       // Fetch coin balance
       try {
         const balanceData = await getCoinBalance(profile.userId, token);
         setCoinBalance(balanceData.coinBalance || 0);
-        console.log("Coins balance:", balanceData.coinBalance);
       } catch (balanceErr) {
-        console.error('Failed to fetch coin balance:', balanceErr);
+        if (balanceErr.response?.status === 401) {
+          handleUnauthorized();
+          return;
+        }
         setCoinBalance(0);
       }
       
       // Fetch billing info
       try {
         const billingData = await getBillingInfo(profile.userId, token);
-        console.log("Billing data response:", billingData);
-        
         if (billingData?.headers?.responseCode === 404) {
-          console.log('No billing info found');
           setBillingInfo(null);
         } else {
           setBillingInfo(billingData);
         }
       } catch (billingErr) {
-        console.error('Failed to fetch billing info:', billingErr);
+        if (billingErr.response?.status === 401) {
+          handleUnauthorized();
+          return;
+        }
         setBillingInfo(null);
       }
       
       setAuthError(null);
       
     } catch (err) {
-      console.error('Authentication check failed:', err);
-      setAuthError(err.message || 'Failed to verify your session. Please try again.');
+      if (err.response?.status === 401) {
+        handleUnauthorized();
+        return;
+      }
+      setAuthError(err.message || 'Failed to verify your session.');
       setIsLoggedIn(false);
       setUserProfile(null);
-      
-      // If token is invalid, remove it
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        localStorage.removeItem('authToken');
-      }
     }
     
     setIsCheckingAuth(false);
@@ -114,17 +117,8 @@ const CustomHeader = () => {
 
   // Handle logout
   const handleLogout = () => {
-    const result = logoutUser();
-    if (result.success) {
-      setIsLoggedIn(false);
-      setUserProfile(null);
-      setCoinBalance(0);
-      setBillingInfo(null);
-      navigate('/login');
-      setProfileOpen(false);
-    } else {
-      console.error(result.message);
-    }
+    logoutUser();
+    handleUnauthorized();
   };
 
   // Close dropdowns when clicking outside
@@ -138,48 +132,29 @@ const CustomHeader = () => {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Check auth on mount and when modals close
   useEffect(() => {
     checkAuth();
-
-    const handleStorageChange = (e) => {
-      if (e.key === 'authToken') {
-        console.log('Storage change detected for authToken');
-        checkAuth();
-      }
-    };
-
+    const handleStorageChange = (e) => e.key === 'authToken' && checkAuth();
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [showBuyModal, showBillingModal, showChangePasswordModal]);
 
-  // Add additional effect to check auth when component mounts
+  // Initial auth check
   useEffect(() => {
-    // Force a recheck after a short delay to ensure token is available
-    const timeoutId = setTimeout(() => {
-      checkAuth();
-    }, 100);
-
+    const timeoutId = setTimeout(checkAuth, 100);
     return () => clearTimeout(timeoutId);
   }, []);
 
-  // Add periodic check for auth changes
+  // Periodic auth check
   useEffect(() => {
     const interval = setInterval(() => {
       const token = localStorage.getItem('authToken');
-      const currentlyLoggedIn = !!token;
-      
-      if (currentlyLoggedIn !== isLoggedIn) {
-        console.log('Auth state change detected, rechecking...');
-        checkAuth();
-      }
-    }, 1000); // Check every second
-
+      if (!!token !== isLoggedIn) checkAuth();
+    }, 1000);
     return () => clearInterval(interval);
   }, [isLoggedIn]);
 
@@ -193,18 +168,13 @@ const CustomHeader = () => {
     );
   }
 
-  console.log('Rendering header with isLoggedIn:', isLoggedIn); // Debug log
-
   return (
     <header className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg sticky top-0 z-50">
       {authError && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <p>{authError}</p>
-            <button 
-              onClick={() => setAuthError(null)}
-              className="text-red-700 hover:text-red-900"
-            >
+            <button onClick={() => setAuthError(null)} className="text-red-700 hover:text-red-900">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -382,14 +352,6 @@ const CustomHeader = () => {
                         <Key className="h-4 w-4 mr-2 text-blue-500" />
                         Change Password
                       </button>
-                      {/* <Link 
-                        to="/settings" 
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                        onClick={() => setProfileOpen(false)}
-                      >
-                        <Settings className="h-4 w-4 mr-2 text-blue-500" />
-                        Settings
-                      </Link> */}
                       <div className="border-t border-gray-100"></div>
                       <button
                         onClick={handleLogout}
@@ -600,6 +562,7 @@ const CustomHeader = () => {
                 setShowBuyModal(true);
               }}
               initialData={billingInfo}
+              onUnauthorized={handleUnauthorized}
             />
           )}
 
@@ -613,6 +576,7 @@ const CustomHeader = () => {
                 checkAuth();
               }}
               billingInfo={billingInfo}
+              onUnauthorized={handleUnauthorized}
             />
           )}
 
@@ -620,15 +584,15 @@ const CustomHeader = () => {
             <TransactionHistory
               userId={userProfile?.userId}
               onClose={() => setShowHistoryModal(false)}
+              onUnauthorized={handleUnauthorized}
             />
           )}
 
           {showChangePasswordModal && (
             <ChangePasswordModal
               onClose={() => setShowChangePasswordModal(false)}
-              onSave={() => {
-                // Optional: perform any actions after password change
-              }}
+              onSave={() => {}}
+              onUnauthorized={handleUnauthorized}
             />
           )}
         </>

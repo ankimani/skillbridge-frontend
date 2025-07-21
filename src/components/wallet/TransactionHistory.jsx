@@ -40,7 +40,8 @@ const TransactionHistory = ({ userId, onClose }) => {
     
     if (searchTerm) {
       results = results.filter(tx => 
-        tx.description.toLowerCase().includes(searchTerm.toLowerCase())
+        tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tx.status.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -70,9 +71,11 @@ const TransactionHistory = ({ userId, onClose }) => {
     setCurrentPage(1);
   };
 
-  const currentBalance = transactions.reduce((acc, tx) => {
-    return tx.entryType === 'DEBIT' ? acc + tx.coins : acc - tx.coins;
-  }, 0);
+  const currentBalance = transactions
+    .filter(tx => tx.status.toUpperCase() === 'COMPLETED')
+    .reduce((acc, tx) => {
+      return tx.entryType === 'DEBIT' ? acc + tx.coins : acc - tx.coins;
+    }, 0);
 
   const indexOfLastTransaction = currentPage * transactionsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
@@ -93,32 +96,70 @@ const TransactionHistory = ({ userId, onClose }) => {
     return date.toLocaleDateString(undefined, options);
   };
 
+  const getStatusColor = (status) => {
+    switch(status.toUpperCase()) {
+      case 'COMPLETED':
+        return 'bg-green-100 text-green-800';
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'FAILED':
+      case 'CANCELLED':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getAmountColorAndSign = (tx) => {
+    if (tx.status.toUpperCase() !== 'COMPLETED') {
+      return { color: 'text-red-600', sign: '-' };
+    }
+    return tx.entryType === 'DEBIT' 
+      ? { color: 'text-green-600', sign: '+' } 
+      : { color: 'text-red-600', sign: '-' };
+  };
+
   const handleDownloadPDF = async () => {
+    const completedBalance = transactions
+      .filter(tx => tx.status.toUpperCase() === 'COMPLETED')
+      .reduce((acc, tx) => {
+        return tx.entryType === 'DEBIT' ? acc + tx.coins : acc - tx.coins;
+      }, 0);
+
     const tempElement = document.createElement('div');
     tempElement.className = 'bg-white p-4';
     tempElement.innerHTML = `
       <h2 class="text-xl font-bold mb-4">Transaction History</h2>
-      <p class="mb-4">Current Balance: ${currentBalance} coins</p>
+      <p class="mb-4">Current Balance: ${completedBalance} coins</p>
       <table class="w-full">
         <thead>
           <tr class="bg-gray-100">
             <th class="text-left p-2">No.</th>
             <th class="text-left p-2">Date & Time</th>
             <th class="text-left p-2">Description</th>
+            <th class="text-left p-2">Status</th>
             <th class="text-right p-2">Coins</th>
           </tr>
         </thead>
         <tbody>
-          ${filteredTransactions.map((tx, index) => `
-            <tr class="border-b">
-              <td class="p-2">${index + 1}</td>
-              <td class="p-2">${formatDate(tx.createdAt)}</td>
-              <td class="p-2">${tx.description}</td>
-              <td class="p-2 text-right ${tx.entryType === 'DEBIT' ? 'text-green-600' : 'text-red-600'}">
-                ${tx.entryType === 'DEBIT' ? '+' : '-'}${tx.coins}
-              </td>
-            </tr>
-          `).join('')}
+          ${filteredTransactions.map((tx, index) => {
+            const { color, sign } = getAmountColorAndSign(tx);
+            return `
+              <tr class="border-b">
+                <td class="p-2">${index + 1}</td>
+                <td class="p-2">${formatDate(tx.createdAt)}</td>
+                <td class="p-2">${tx.description}</td>
+                <td class="p-2">
+                  <span class="px-2 py-1 rounded-full text-xs ${getStatusColor(tx.status)}">
+                    ${tx.status}
+                  </span>
+                </td>
+                <td class="p-2 text-right ${color}">
+                  ${sign}${tx.coins}
+                </td>
+              </tr>
+            `;
+          }).join('')}
         </tbody>
       </table>
     `;
@@ -191,7 +232,7 @@ const TransactionHistory = ({ userId, onClose }) => {
         <div className="p-4 border-b border-gray-200 bg-blue-50">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Search Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Search Description/Status</label>
               <input
                 type="text"
                 placeholder="Search transactions..."
@@ -268,54 +309,63 @@ const TransactionHistory = ({ userId, onClose }) => {
           ) : (
             <div className="divide-y divide-gray-100">
               {/* Table Header */}
-              <div className="hidden md:grid grid-cols-9 gap-4 px-5 py-3 bg-blue-50 text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <div className="hidden md:grid grid-cols-12 gap-4 px-5 py-3 bg-blue-50 text-xs font-medium text-gray-600 uppercase tracking-wider">
                 <div className="col-span-1">No.</div>
                 <div className="col-span-3">Date & Time</div>
-                <div className="col-span-3">Description</div>
+                <div className="col-span-4">Description</div>
+                <div className="col-span-2">Status</div>
                 <div className="col-span-2 text-right">Coins</div>
               </div>
 
               {/* Transactions List */}
-              {currentTransactions.map((tx, index) => (
-                <div 
-                  key={tx.transactionUuid} 
-                  className="grid grid-cols-1 md:grid-cols-9 gap-4 px-5 py-3 hover:bg-blue-50 transition-colors"
-                >
-                  {/* Number - Mobile */}
-                  <div className="md:hidden text-xs text-gray-500">
-                    <span className="font-medium">{indexOfFirstTransaction + index + 1}.</span>
+              {currentTransactions.map((tx, index) => {
+                const { color, sign } = getAmountColorAndSign(tx);
+                return (
+                  <div 
+                    key={tx.transactionUuid} 
+                    className="grid grid-cols-1 md:grid-cols-12 gap-4 px-5 py-3 hover:bg-blue-50 transition-colors"
+                  >
+                    {/* Number - Mobile */}
+                    <div className="md:hidden text-xs text-gray-500">
+                      <span className="font-medium">{indexOfFirstTransaction + index + 1}.</span>
+                    </div>
+                    
+                    {/* Number - Desktop */}
+                    <div className="hidden md:block col-span-1 text-sm text-gray-600">
+                      {indexOfFirstTransaction + index + 1}.
+                    </div>
+                    
+                    {/* Date - Mobile */}
+                    <div className="md:hidden text-xs text-gray-500">
+                      {formatDate(tx.createdAt)}
+                    </div>
+                    
+                    {/* Date - Desktop */}
+                    <div className="hidden md:block col-span-3 text-sm text-gray-600">
+                      {formatDate(tx.createdAt)}
+                    </div>
+                    
+                    {/* Description */}
+                    <div className="md:col-span-4 text-sm text-gray-800">
+                      {tx.description}
+                    </div>
+                    
+                    {/* Status */}
+                    <div className="md:col-span-2">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(tx.status)}`}>
+                        {tx.status}
+                      </span>
+                    </div>
+                    
+                    {/* Amount */}
+                    <div className="md:col-span-2 text-right">
+                      <span className={`text-sm font-medium ${color}`}>
+                        {sign}{tx.coins}
+                      </span>
+                    </div>
                   </div>
-                  
-                  {/* Number - Desktop */}
-                  <div className="hidden md:block col-span-1 text-sm text-gray-600">
-                    {indexOfFirstTransaction + index + 1}.
-                  </div>
-                  
-                  {/* Date - Mobile */}
-                  <div className="md:hidden text-xs text-gray-500">
-                    {formatDate(tx.createdAt)}
-                  </div>
-                  
-                  {/* Date - Desktop */}
-                  <div className="hidden md:block col-span-3 text-sm text-gray-600">
-                    {formatDate(tx.createdAt)}
-                  </div>
-                  
-                  {/* Description */}
-                  <div className="col-span-3 text-sm text-gray-800">
-                    {tx.description}
-                  </div>
-                  
-                  {/* Amount */}
-                  <div className="col-span-2 text-right">
-                    <span className={`text-sm font-medium ${
-                      tx.entryType === 'DEBIT' ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {tx.entryType === 'DEBIT' ? '+' : '-'}{tx.coins}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

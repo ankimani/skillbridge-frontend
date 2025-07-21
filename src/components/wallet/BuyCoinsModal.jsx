@@ -1,14 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { FaCreditCard, FaCoins, FaLock, FaArrowRight, FaRegCreditCard, FaCalendarAlt, FaShieldAlt, FaCheckCircle, FaTimes, FaMobileAlt, FaArrowLeft, FaUser, FaExclamationTriangle } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import { buyCoins, buyCoinMpesa, calculateCoinPrice } from '../services/coinWallet';
 
+// Preload Stripe.js when the app loads
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-// Enhanced Alert Component with auto-dismiss and manual close
-const Alert = ({ type, message, onClose, duration = 5000 }) => {
+// Custom hook for debouncing
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+// Memoized Alert Component
+const Alert = React.memo(({ type, message, onClose, duration = 5000 }) => {
   const alertStyles = {
     success: 'bg-green-50 border-green-200 text-green-800',
     error: 'bg-red-50 border-red-200 text-red-800',
@@ -64,10 +82,10 @@ const Alert = ({ type, message, onClose, duration = 5000 }) => {
       </div>
     </div>
   );
-};
+});
 
-// Step Indicator Component
-const StepIndicator = ({ currentStep, totalSteps }) => {
+// Memoized Step Indicator Component
+const StepIndicator = React.memo(({ currentStep, totalSteps }) => {
   return (
     <div className="flex items-center justify-center mb-8">
       {[...Array(totalSteps)].map((_, index) => (
@@ -92,7 +110,7 @@ const StepIndicator = ({ currentStep, totalSteps }) => {
       ))}
     </div>
   );
-};
+});
 
 // Main Form Component
 const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
@@ -102,7 +120,6 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
   const [coins, setCoins] = useState(100);
   const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [purchasedCoins, setPurchasedCoins] = useState(0);
@@ -112,66 +129,47 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
     cardCvc: false
   });
   const [cardBrand, setCardBrand] = useState(null);
-  const [isBillingDataLoading, setIsBillingDataLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [mpesaLoading, setMpesaLoading] = useState(false);
-  const [idempotencyKey, setIdempotencyKey] = useState('');
-  const [countries, setCountries] = useState([]);
+  const [stripeReady, setStripeReady] = useState(false);
+  
+  // Memoized country data
+  const [countries] = useState(() => [
+    { name: 'United States', code: 'US' },
+    { name: 'Kenya', code: 'KE' },
+    { name: 'United Kingdom', code: 'GB' }
+  ]);
 
+  // Debounce coin changes to prevent rapid API calls
+  const debouncedCoins = useDebounce(coins, 500);
   const totalSteps = 3;
 
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        const response = await fetch('/data/countries.json');
-        if (!response.ok) throw new Error('Failed to load countries');
-        const countriesData = await response.json();
-        setCountries(countriesData);
-        setIdempotencyKey(crypto.randomUUID());
-      } catch (error) {
-        console.error('Initialization error:', error);
-        setCountries([
-          { name: 'United States', code: 'US' },
-          { name: 'Kenya', code: 'KE' },
-          { name: 'United Kingdom', code: 'GB' }
-        ]);
-      }
-    };
-
-    initialize();
-  }, []);
-
-  const getCountryCode = (countryName) => {
-    if (!countryName) return null;
-    const country = countries.find(c => c.name.toLowerCase() === countryName.toLowerCase());
-    return country ? country.code : null;
-  };
-
-  const getBillingData = () => {
+  // Memoized billing data extraction
+  const billingData = useMemo(() => {
     if (billingInfo?.body?.data?.body?.data) return billingInfo.body.data.body.data;
     if (billingInfo?.body?.data) return billingInfo.body.data;
     return billingInfo || {};
-  };
+  }, [billingInfo]);
 
-  const billingData = getBillingData();
-
-  useEffect(() => {
-    if (billingData && billingData.fullName) {
-      setIsBillingDataLoading(false);
-      if (billingData.contactNo) {
-        setPhoneNumber(billingData.contactNo);
-      }
-    }
+  // Check if billing data is loaded
+  const isBillingDataLoading = useMemo(() => {
+    return !(billingData && billingData.fullName);
   }, [billingData]);
 
+  // Initialize Stripe readiness
+  useEffect(() => {
+    stripePromise.then(() => setStripeReady(true));
+  }, []);
+
+  // Fetch price when debounced coins change
   useEffect(() => {
     const fetchPrice = async () => {
       try {
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error('No authentication token found');
         
-        const priceData = await calculateCoinPrice(coins, token);
+        const priceData = await calculateCoinPrice(debouncedCoins, token);
         if (!priceData || typeof priceData.finalPrice !== 'number') {
           throw new Error('Invalid price data received');
         }
@@ -187,10 +185,20 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
       }
     };
     
-    fetchPrice();
-  }, [coins]);
+    if (debouncedCoins > 0) {
+      fetchPrice();
+    }
+  }, [debouncedCoins]);
 
-  const canProceedToNextStep = () => {
+  // Get country code from billing data
+  const getCountryCode = useCallback((countryName) => {
+    if (!countryName) return null;
+    const country = countries.find(c => c.name.toLowerCase() === countryName.toLowerCase());
+    return country ? country.code : null;
+  }, [countries]);
+
+  // Check if can proceed to next step
+  const canProceedToNextStep = useMemo(() => {
     switch (currentStep) {
       case 1: 
         return coins > 0 && amount > 0;
@@ -203,25 +211,25 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
       default: 
         return false;
     }
-  };
+  }, [currentStep, coins, amount, paymentMethod, phoneNumber, cardComplete]);
 
-  const nextStep = () => {
-    if (currentStep < totalSteps && canProceedToNextStep()) {
+  // Navigation functions
+  const nextStep = useCallback(() => {
+    if (currentStep < totalSteps && canProceedToNextStep) {
       setCurrentStep(currentStep + 1);
-      setError(null);
       setAlert(null);
     }
-  };
+  }, [currentStep, totalSteps, canProceedToNextStep]);
 
-  const prevStep = () => {
+  const prevStep = useCallback(() => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
-      setError(null);
       setAlert(null);
     }
-  };
+  }, [currentStep]);
 
-  const handleCardChange = (field) => (event) => {
+  // Card change handlers
+  const handleCardChange = useCallback((field) => (event) => {
     if (field === 'cardNumber') {
       setCardBrand(event.brand || null);
     }
@@ -230,22 +238,24 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
       ...prev,
       [field]: event.complete
     }));
-  };
+  }, []);
 
-  const handleCoinChange = (e) => {
+  // Coin amount handlers
+  const handleCoinChange = useCallback((e) => {
     const value = parseInt(e.target.value) || 50;
     setCoins(Math.max(50, Math.round(value / 50) * 50));
-  };
+  }, []);
 
-  const incrementCoins = () => {
+  const incrementCoins = useCallback(() => {
     setCoins(prev => prev + 50);
-  };
+  }, []);
 
-  const decrementCoins = () => {
+  const decrementCoins = useCallback(() => {
     setCoins(prev => Math.max(50, prev - 50));
-  };
+  }, []);
 
-  const handleSubmit = async (event) => {
+  // Payment submission
+  const handleSubmit = useCallback(async (event) => {
     event.preventDefault();
     
     if (!amount || amount <= 0) {
@@ -284,11 +294,10 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
     }
     
     setLoading(true);
-    setError(null);
     setAlert(null);
 
-    if (paymentMethod === 'mpesa') {
-      try {
+    try {
+      if (paymentMethod === 'mpesa') {
         setMpesaLoading(true);
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error('Authentication required');
@@ -314,26 +323,14 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
         setTimeout(() => {
           onSuccess();
         }, 3500);
-      } catch (err) {
-        console.error('M-Pesa payment error:', err);
-        setAlert({ 
-          type: 'error', 
-          message: err.message || 'M-Pesa payment failed. Please try again.',
-          duration: 8000
-        });
-      } finally {
-        setLoading(false);
-        setMpesaLoading(false);
+        return;
       }
-      return;
-    }
 
-    if (!stripe || !elements) {
-      setLoading(false);
-      return;
-    }
+      // Stripe payment
+      if (!stripe || !elements) {
+        throw new Error('Payment system not ready');
+      }
 
-    try {
       const { paymentMethod: stripePaymentMethod, error: stripeError } = await stripe.createPaymentMethod({
         type: 'card',
         card: elements.getElement(CardNumberElement),
@@ -371,8 +368,8 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
           currency: 'USD',
           numberOfCoins: coins,
           cardToken: stripePaymentMethod.id,
-          billingAddress: billingAddress,
-          idempotencyKey: idempotencyKey
+          billingAddress,
+          idempotencyKey: crypto.randomUUID()
         },
         token
       );
@@ -383,7 +380,7 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
       setPurchaseSuccess(true);
       setAlert({ 
         type: 'success', 
-        message: `${coins} coins added to your wallet!`,
+        message: `${coins} coins will be added to your wallet!`,
         duration: 5000
       });
       
@@ -399,9 +396,291 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
       });
     } finally {
       setLoading(false);
+      setMpesaLoading(false);
     }
-  };
+  }, [
+    amount, 
+    billingData, 
+    getCountryCode, 
+    paymentMethod, 
+    phoneNumber, 
+    coins, 
+    userId, 
+    onSuccess, 
+    stripe, 
+    elements
+  ]);
 
+  // Define all step contents at the top level using useMemo
+  const step1Content = useMemo(() => (
+    <div className="space-y-6">
+      {isBillingDataLoading ? (
+        <div className="bg-gray-50 p-4 rounded-lg animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-1/3 mb-3"></div>
+          <div className="space-y-2">
+            <div className="h-3 bg-gray-200 rounded w-full"></div>
+            <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+          </div>
+        </div>
+      ) : (
+        billingData?.fullName && (
+          <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
+            <div className="flex items-center mb-3">
+              <FaUser className="text-blue-600 mr-2" />
+              <h3 className="font-semibold text-gray-800">Billing Information</h3>
+            </div>
+            <div className="text-sm text-gray-600">
+              <p><span className="font-medium">{billingData.fullName}</span></p>
+              <p>{billingData.address}, {billingData.city}</p>
+              <p>{billingData.country} • {billingData.contactNo}</p>
+            </div>
+          </div>
+        )
+      )}
+
+      <div className="text-center space-y-6">
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">Select Coins</h3>
+          <p className="text-gray-600 text-sm">Choose the number of coins you'd like to purchase</p>
+        </div>
+        
+        <div className="flex items-center justify-center space-x-4">
+          <button
+            type="button"
+            onClick={decrementCoins}
+            className="w-10 h-10 bg-white border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50 transition-all shadow-sm"
+            disabled={coins <= 50}
+          >
+            <span className="text-gray-600 font-bold">−</span>
+          </button>
+          
+          <div className="text-center mx-6">
+            <input
+              type="number"
+              min="50"
+              step="50"
+              value={coins}
+              onChange={handleCoinChange}
+              className="text-3xl font-bold text-indigo-600 w-24 text-center border-b-2 border-indigo-200 focus:border-indigo-500 focus:outline-none bg-transparent"
+            />
+            <div className="text-xs text-gray-500 mt-1">coins</div>
+          </div>
+          
+          <button
+            type="button"
+            onClick={incrementCoins}
+            className="w-10 h-10 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-all shadow-sm"
+          >
+            <span className="text-gray-600 font-bold">+</span>
+          </button>
+        </div>
+        
+        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg border border-indigo-100">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-700 font-medium">Total Amount</span>
+            <span className="text-2xl font-bold text-indigo-700">
+              {amount > 0 ? `$${amount.toFixed(2)}` : 'Calculating...'}
+            </span>
+          </div>
+          <div className="text-xs text-gray-500 mt-1">
+            {coins} coins at ${(amount/coins).toFixed(2)} per coin
+          </div>
+        </div>
+      </div>
+    </div>
+  ), [isBillingDataLoading, billingData, coins, amount, handleCoinChange, decrementCoins, incrementCoins]);
+
+  const step2Content = useMemo(() => (
+    <div className="space-y-6">
+      <div className="text-center">
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">Payment Method</h3>
+        <p className="text-gray-600 text-sm">Choose how you'd like to pay</p>
+      </div>
+      
+      <div className="space-y-3">
+        <button
+          type="button"
+          onClick={() => setPaymentMethod('card')}
+          className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+            paymentMethod === 'card' 
+              ? 'border-indigo-500 bg-indigo-50 shadow-md' 
+              : 'border-gray-200 hover:border-indigo-300'
+          }`}
+        >
+          <div className="flex items-center">
+            <div className={`p-2 rounded-full mr-3 ${
+              paymentMethod === 'card' 
+                ? 'bg-indigo-100 text-indigo-600' 
+                : 'bg-gray-100 text-gray-500'
+            }`}>
+              <FaCreditCard />
+            </div>
+            <div>
+              <div className="font-medium text-gray-800">Credit/Debit Card</div>
+              <div className="text-sm text-gray-500">Visa, Mastercard, American Express</div>
+            </div>
+          </div>
+        </button>
+        
+        <button
+          type="button"
+          onClick={() => setPaymentMethod('mpesa')}
+          className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+            paymentMethod === 'mpesa' 
+              ? 'border-green-500 bg-green-50 shadow-md' 
+              : 'border-gray-200 hover:border-green-300'
+          }`}
+        >
+          <div className="flex items-center">
+            <div className={`p-2 rounded-full mr-3 ${
+              paymentMethod === 'mpesa' 
+                ? 'bg-green-100 text-green-600' 
+                : 'bg-gray-100 text-gray-500'
+            }`}>
+              <FaMobileAlt />
+            </div>
+            <div>
+              <div className="font-medium text-gray-800">M-Pesa</div>
+              <div className="text-sm text-gray-500">Pay via mobile money</div>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+  ), [paymentMethod]);
+
+  const step3Content = useMemo(() => {
+    if (paymentMethod === 'card' && !stripeReady) {
+      return (
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      );
+    }
+
+    return paymentMethod === 'card' ? (
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Card Number
+          </label>
+          <div className="border border-gray-300 rounded-lg p-2 h-10 bg-white focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
+            <CardNumberElement
+              options={{
+                style: {
+                  base: {
+                    fontSize: '16px',
+                    color: '#1f2937',
+                    '::placeholder': { color: '#9ca3af' },
+                  },
+                  invalid: { color: '#ef4444' },
+                },
+              }}
+              onChange={handleCardChange('cardNumber')}
+            />
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Expiry Date
+            </label>
+            <div className="border border-gray-300 rounded-lg p-2 h-10 bg-white focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
+              <CardExpiryElement
+                options={{
+                  style: {
+                    base: {
+                      fontSize: '16px',
+                      color: '#1f2937',
+                      '::placeholder': { color: '#9ca3af' },
+                    },
+                    invalid: { color: '#ef4444' },
+                  },
+                }}
+                onChange={handleCardChange('cardExpiry')}
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              CVC
+            </label>
+            <div className="border border-gray-300 rounded-lg p-2 h-10 bg-white focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
+              <CardCvcElement
+                options={{
+                  style: {
+                    base: {
+                      fontSize: '16px',
+                      color: '#1f2937',
+                      '::placeholder': { color: '#9ca3af' },
+                    },
+                    invalid: { color: '#ef4444' },
+                  },
+                }}
+                onChange={handleCardChange('cardCvc')}
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex justify-center space-x-2 pt-2">
+          {Object.entries({
+            visa: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png',
+            mastercard: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/1200px-MasterCard_Logo.svg.png',
+            amex: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1200px-American_Express_logo_%282018%29.svg.png',
+          }).map(([brand, logo]) => (
+            <img 
+              key={brand}
+              src={logo} 
+              alt={brand} 
+              className={`h-6 transition-opacity ${cardBrand === brand ? 'opacity-100' : 'opacity-30'}`}
+            />
+          ))}
+        </div>
+      </div>
+    ) : (
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Phone Number
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span className="text-gray-500 text-sm">+254</span>
+            </div>
+            <input
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9]/g, ''))}
+              placeholder="7XX XXX XXX"
+              className="block w-full pl-14 pr-3 py-2 h-10 border border-gray-300 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all"
+            />
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            You'll receive an M-Pesa prompt on this number
+          </p>
+        </div>
+        
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-4 w-4 text-yellow-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                Ensure your M-Pesa PIN is ready. You'll receive a payment request on your phone.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }, [paymentMethod, stripeReady, phoneNumber, cardBrand, handleCardChange]);
+
+  // Success view
   if (purchaseSuccess) {
     return (
       <div className="p-8 text-center">
@@ -436,7 +715,7 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
             </>
           ) : (
             <p className="text-lg text-gray-700">
-              <span className="font-bold text-green-600">{purchasedCoins} coins</span> added to your wallet!
+              <span className="font-bold text-green-600">{purchasedCoins} coins</span>will be added to your wallet!
             </p>
           )}
         </div>
@@ -449,290 +728,6 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
       </div>
     );
   }
-
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <div className="space-y-6">
-            {isBillingDataLoading ? (
-              <div className="bg-gray-50 p-4 rounded-lg animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3"></div>
-                <div className="space-y-2">
-                  <div className="h-3 bg-gray-200 rounded w-full"></div>
-                  <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                </div>
-              </div>
-            ) : (
-              billingData?.fullName && (
-                <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
-                  <div className="flex items-center mb-3">
-                    <FaUser className="text-blue-600 mr-2" />
-                    <h3 className="font-semibold text-gray-800">Billing Information</h3>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    <p><span className="font-medium">{billingData.fullName}</span></p>
-                    <p>{billingData.address}, {billingData.city}</p>
-                    <p>{billingData.country} • {billingData.contactNo}</p>
-                  </div>
-                </div>
-              )
-            )}
-
-            <div className="text-center space-y-6">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Select Coins</h3>
-                <p className="text-gray-600 text-sm">Choose the number of coins you'd like to purchase</p>
-              </div>
-              
-              <div className="flex items-center justify-center space-x-4">
-                <button
-                  type="button"
-                  onClick={decrementCoins}
-                  className="w-10 h-10 bg-white border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50 transition-all shadow-sm"
-                  disabled={coins <= 50}
-                >
-                  <span className="text-gray-600 font-bold">−</span>
-                </button>
-                
-                <div className="text-center mx-6">
-                  <input
-                    type="number"
-                    min="50"
-                    step="50"
-                    value={coins}
-                    onChange={handleCoinChange}
-                    className="text-3xl font-bold text-indigo-600 w-24 text-center border-b-2 border-indigo-200 focus:border-indigo-500 focus:outline-none bg-transparent"
-                  />
-                  <div className="text-xs text-gray-500 mt-1">coins</div>
-                </div>
-                
-                <button
-                  type="button"
-                  onClick={incrementCoins}
-                  className="w-10 h-10 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-all shadow-sm"
-                >
-                  <span className="text-gray-600 font-bold">+</span>
-                </button>
-              </div>
-              
-              <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg border border-indigo-100">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-700 font-medium">Total Amount</span>
-                  <span className="text-2xl font-bold text-indigo-700">
-                    {amount > 0 ? `$${amount.toFixed(2)}` : 'Calculating...'}
-                  </span>
-                </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {coins} coins at ${(amount/coins).toFixed(2)} per coin
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Payment Method</h3>
-              <p className="text-gray-600 text-sm">Choose how you'd like to pay</p>
-            </div>
-            
-            <div className="space-y-3">
-              <button
-                type="button"
-                onClick={() => setPaymentMethod('card')}
-                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                  paymentMethod === 'card' 
-                    ? 'border-indigo-500 bg-indigo-50 shadow-md' 
-                    : 'border-gray-200 hover:border-indigo-300'
-                }`}
-              >
-                <div className="flex items-center">
-                  <div className={`p-2 rounded-full mr-3 ${
-                    paymentMethod === 'card' 
-                      ? 'bg-indigo-100 text-indigo-600' 
-                      : 'bg-gray-100 text-gray-500'
-                  }`}>
-                    <FaCreditCard />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-800">Credit/Debit Card</div>
-                    <div className="text-sm text-gray-500">Visa, Mastercard, American Express</div>
-                  </div>
-                </div>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setPaymentMethod('mpesa')}
-                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                  paymentMethod === 'mpesa' 
-                    ? 'border-green-500 bg-green-50 shadow-md' 
-                    : 'border-gray-200 hover:border-green-300'
-                }`}
-              >
-                <div className="flex items-center">
-                  <div className={`p-2 rounded-full mr-3 ${
-                    paymentMethod === 'mpesa' 
-                      ? 'bg-green-100 text-green-600' 
-                      : 'bg-gray-100 text-gray-500'
-                  }`}>
-                    <FaMobileAlt />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-800">M-Pesa</div>
-                    <div className="text-sm text-gray-500">Pay via mobile money</div>
-                  </div>
-                </div>
-              </button>
-            </div>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                {paymentMethod === 'card' ? 'Card Details' : 'M-Pesa Details'}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {paymentMethod === 'card' 
-                  ? 'Enter your card information securely' 
-                  : 'Enter your M-Pesa number'
-                }
-              </p>
-            </div>
-            
-            {paymentMethod === 'card' ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Card Number
-                  </label>
-                  <div className="border border-gray-300 rounded-lg p-2 h-10 bg-white focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
-                    <CardNumberElement
-                      options={{
-                        style: {
-                          base: {
-                            fontSize: '16px',
-                            color: '#1f2937',
-                            '::placeholder': { color: '#9ca3af' },
-                          },
-                          invalid: { color: '#ef4444' },
-                        },
-                      }}
-                      onChange={handleCardChange('cardNumber')}
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Expiry Date
-                    </label>
-                    <div className="border border-gray-300 rounded-lg p-2 h-10 bg-white focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
-                      <CardExpiryElement
-                        options={{
-                          style: {
-                            base: {
-                              fontSize: '16px',
-                              color: '#1f2937',
-                              '::placeholder': { color: '#9ca3af' },
-                            },
-                            invalid: { color: '#ef4444' },
-                          },
-                        }}
-                        onChange={handleCardChange('cardExpiry')}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      CVC
-                    </label>
-                    <div className="border border-gray-300 rounded-lg p-2 h-10 bg-white focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
-                      <CardCvcElement
-                        options={{
-                          style: {
-                            base: {
-                              fontSize: '16px',
-                              color: '#1f2937',
-                              '::placeholder': { color: '#9ca3af' },
-                            },
-                            invalid: { color: '#ef4444' },
-                          },
-                        }}
-                        onChange={handleCardChange('cardCvc')}
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex justify-center space-x-2 pt-2">
-                  {Object.entries({
-                    visa: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png',
-                    mastercard: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/1200px-MasterCard_Logo.svg.png',
-                    amex: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1200px-American_Express_logo_%282018%29.svg.png',
-                  }).map(([brand, logo]) => (
-                    <img 
-                      key={brand}
-                      src={logo} 
-                      alt={brand} 
-                      className={`h-6 transition-opacity ${cardBrand === brand ? 'opacity-100' : 'opacity-30'}`}
-                    />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 text-sm">+254</span>
-                    </div>
-                    <input
-                      type="tel"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9]/g, ''))}
-                      placeholder="7XX XXX XXX"
-                      className="block w-full pl-14 pr-3 py-2 h-10 border border-gray-300 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    You'll receive an M-Pesa prompt on this number
-                  </p>
-                </div>
-                
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <svg className="h-4 w-4 text-yellow-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm text-yellow-700">
-                        Ensure your M-Pesa PIN is ready. You'll receive a payment request on your phone.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -747,14 +742,9 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
         />
       )}
       
-      {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded flex items-start">
-          <FaTimes className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-          <p className="text-sm text-red-700 ml-3">{error}</p>
-        </div>
-      )}
-      
-      {renderStepContent()}
+      {currentStep === 1 && step1Content}
+      {currentStep === 2 && step2Content}
+      {currentStep === 3 && step3Content}
       
       <div className="flex justify-between pt-4 border-t border-gray-200 mt-6">
         <button
@@ -771,9 +761,9 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
           <button
             type="button"
             onClick={nextStep}
-            disabled={!canProceedToNextStep() || loading}
+            disabled={!canProceedToNextStep || loading}
             className={`flex items-center px-6 py-2.5 rounded-lg font-medium transition-all ${
-              canProceedToNextStep() && !loading
+              canProceedToNextStep && !loading
                 ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
             }`}
@@ -785,9 +775,9 @@ const BuyCoinsForm = ({ userId, onSuccess, onClose, billingInfo }) => {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={loading || !canProceedToNextStep()}
+            disabled={loading || !canProceedToNextStep}
             className={`flex items-center px-6 py-2.5 rounded-lg font-medium transition-all ${
-              loading || !canProceedToNextStep()
+              loading || !canProceedToNextStep
                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                 : 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 shadow-md'
             }`}

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaRegClock, FaCoins, FaArrowLeft, FaArrowRight, FaUsers, FaCheckCircle } from 'react-icons/fa';
-import axios from 'axios';
-import { formatDistanceToNow, parseISO } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { differenceInHours } from 'date-fns';
+import { Link, useNavigate } from 'react-router-dom';
 import { getJobApplicantCount } from '../services/jobApplicantCount';
-import CustomHeader from './CustomHeader';
+import { fetchUserProfile } from '../services/authProfile';
 import SidebarFilters from './SidebarFilters';
 import Footer from '../shared/Footer';
 import Search from './SearchForm';
+import ProfileIncomplete from './ProfileIncomplete';
 
 const JobDisplay = () => {
   const [jobs, setJobs] = useState([]);
@@ -28,10 +28,42 @@ const JobDisplay = () => {
   const [keyword, setKeyword] = useState('');
   const [applicantCounts, setApplicantCounts] = useState({});
   const [countsLoading, setCountsLoading] = useState({});
+  const [userProfile, setUserProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const tutorRoutes = {
+    PROFILE: "/profileform",
+    EDUCATION: "/education",
+    EXPERIENCE: "/experience",
+    SUBJECTS: "/subjects",
+    DETAILS: "/details",
+    COMPLETE: "/jobs"
+  };
 
   useEffect(() => {
     let isMounted = true;
     
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          const profile = await fetchUserProfile(token);
+          if (isMounted) {
+            setUserProfile(profile);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching user profile:', err);
+      } finally {
+        if (isMounted) {
+          setProfileLoading(false);
+        }
+      }
+    };
+
+    fetchUserData();
+
     const fetchJobs = async () => {
       try {
         if (isMounted) {
@@ -65,22 +97,19 @@ const JobDisplay = () => {
           setJobs(data.body.data.jobs);
           setTotalPages(data.body.data.totalPages);
           
-          // Initialize loading states for counts
           const loadingStates = {};
           const counts = {};
           
           data.body.data.jobs.forEach(job => {
             loadingStates[job.jobId] = true;
-            counts[job.jobId] = 0; // Initialize with 0
+            counts[job.jobId] = 0;
           });
           
           setCountsLoading(loadingStates);
           setApplicantCounts(counts);
 
-          // Fetch applicant counts for each job
           const token = localStorage.getItem('authToken');
           
-          // Don't await here to avoid blocking the UI
           data.body.data.jobs.forEach(async (job) => {
             try {
               const count = await getJobApplicantCount(job.jobId, token);
@@ -117,35 +146,60 @@ const JobDisplay = () => {
     };
   }, [currentPage, pageSize, filters, keyword]);
 
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
-
-  const getFormattedDate = (createdAt) => {
+  const getFormattedDate = (createdAtArray) => {
     try {
-      if (createdAt instanceof Date || typeof createdAt === 'number') {
-        const date = new Date(createdAt);
-        return formatDistanceToNow(date, { addSuffix: true });
+      if (!createdAtArray || !Array.isArray(createdAtArray)) {
+        return 'some time ago';
       }
+
+      // Array format: [year, month, day, hour, minute, second, nanosecond]
+      const date = new Date(
+        createdAtArray[0],                     // year
+        createdAtArray[1] - 1,                // month (0-11)
+        createdAtArray[2],                    // day
+        createdAtArray[3],                    // hours
+        createdAtArray[4],                    // minutes
+        createdAtArray[5],                    // seconds
+        Math.floor(createdAtArray[6] / 1000000) // convert nanoseconds to milliseconds
+      );
+
+      const now = new Date();
+      const hours = differenceInHours(now, date);
       
-      if (typeof createdAt === 'string') {
-        if (createdAt.includes('T') || createdAt.includes('-')) {
-          const date = parseISO(createdAt);
-          return formatDistanceToNow(date, { addSuffix: true });
-        }
-        
-        const date = new Date(createdAt);
-        if (!isNaN(date.getTime())) {
-          return formatDistanceToNow(date, { addSuffix: true });
-        }
-      }
+      if (hours < 1) return 'now';
+      if (hours < 24) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
       
-      return 'some time ago';
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+      
+      const weeks = Math.floor(days / 7);
+      if (weeks < 4) return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+      
+      const months = Math.floor(days / 30);
+      if (months < 6) return `${months} ${months === 1 ? 'month' : 'months'} ago`;
+      
+      return 'over 6 months ago';
     } catch (e) {
       console.error('Error formatting date:', e);
       return 'some time ago';
+    }
+  };
+
+  const handleCompleteProfile = () => {
+    if (userProfile?.roleName === 'ROLE_TUTOR' && userProfile?.stepName) {
+      navigate(tutorRoutes[userProfile.stepName] || '/profileform');
+    } else {
+      navigate('/profileform');
+    }
+  };
+
+  const handleCancel = () => {
+    navigate('/jobs');
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
     }
   };
 
@@ -158,6 +212,15 @@ const JobDisplay = () => {
     }
     return `${job.subjects} in ${job.location}`;
   };
+
+  if (!profileLoading && userProfile && userProfile.roleName === 'ROLE_TUTOR' && userProfile.stepName !== 'COMPLETE') {
+    return (
+      <ProfileIncomplete 
+        onComplete={handleCompleteProfile}
+        onCancel={handleCancel}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

@@ -113,8 +113,8 @@ function App() {
           <Route path="/" element={<HomeRoute />} />
           <Route path="register" element={<RegistrationForm />} />
           <Route path="login" element={<LoginForm />} />
-          <Route path="resetlink" element={<ResetPasswordEmail />} />
-          <Route path="passwordreset" element={<ResetPassword />} />
+          <Route path="/forgot-password" element={<ResetPasswordEmail />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<EmailVerification />} />
           
           {/* Admin-only Route */}

@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { FaLock, FaCheck, FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { FaLock, FaCheck, FaEye, FaEyeSlash, FaArrowLeft, FaExclamationTriangle } from 'react-icons/fa';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const ResetPassword = () => {
+  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+  const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1/users/reset-password`;
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: ''
@@ -12,6 +19,17 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [tokenValid, setTokenValid] = useState(null);
+
+  useEffect(() => {
+    if (!token) {
+      setTokenValid(false);
+      return;
+    }
+
+    // You might want to add token validation API call here if needed
+    setTokenValid(true);
+  }, [token]);
 
   const validatePassword = (password) => {
     const requirements = [
@@ -34,7 +52,7 @@ const ResetPassword = () => {
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -49,16 +67,73 @@ const ResetPassword = () => {
     setErrors(newErrors);
     
     if (Object.keys(newErrors).length === 0) {
-      // Simulate API call
-      setTimeout(() => {
-        console.log('Password reset successful:', formData);
-        setIsSuccess(true);
+      try {
+        const response = await axios.post(`${API_BASE_URL}`, {
+          token,
+          newPassword: formData.password,
+          confirmPassword: formData.confirmPassword
+        });
+        
+        // Handle response based on your API structure
+        if (response.data?.headers?.responseCode === 200) {
+          toast.success(response.data.headers.customerMessage || 'Password reset successfully');
+          setIsSuccess(true);
+        } else {
+          toast.error(response.data?.headers?.customerMessage || 'Failed to reset password');
+        }
+      } catch (error) {
+        // Handle different error scenarios
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          const errorData = error.response.data;
+          const errorMessage = errorData?.headers?.customerMessage || 
+                              errorData?.message || 
+                              'Failed to reset password. Please try again.';
+          
+          toast.error(errorMessage);
+          
+          // Handle validation errors from backend if they exist in the response
+          if (error.response.status === 400 && errorData.body?.errors) {
+            setErrors(errorData.body.errors);
+          }
+        } else if (error.request) {
+          // The request was made but no response was received
+          toast.error('Network error. Please check your connection and try again.');
+        } else {
+          // Something happened in setting up the request
+          toast.error('An unexpected error occurred. Please try again.');
+        }
+      } finally {
         setIsSubmitting(false);
-      }, 1500);
+      }
     } else {
       setIsSubmitting(false);
     }
   };
+
+  if (tokenValid === false) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="bg-white shadow-xl rounded-2xl overflow-hidden w-full max-w-md">
+          <div className="bg-red-500 p-6 text-white text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+              <FaExclamationTriangle className="h-6 w-6 text-red-600" />
+            </div>
+            <h2 className="text-2xl font-bold">Invalid Reset Link</h2>
+            <p className="mt-2">The password reset link is invalid or has expired</p>
+          </div>
+          <div className="p-6 text-center">
+            <Link
+              to="/forgot-password"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Request New Reset Link
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
@@ -84,6 +159,17 @@ const ResetPassword = () => {
     );
   }
 
+  if (tokenValid === null) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="bg-white shadow-xl rounded-2xl overflow-hidden w-full max-w-md p-6 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-800">Verifying reset link...</h2>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white shadow-xl rounded-2xl overflow-hidden w-full max-w-md">
@@ -104,6 +190,7 @@ const ResetPassword = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Password Input */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               New Password
@@ -156,6 +243,7 @@ const ResetPassword = () => {
             )}
           </div>
 
+          {/* Confirm Password Input */}
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
               Confirm New Password
