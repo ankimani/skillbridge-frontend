@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { loginUser } from '../services/authService';
 import { FaEye, FaEyeSlash, FaUser, FaLock, FaSpinner, FaTimes } from 'react-icons/fa';
+import { tokenStorage, jwtUtils } from '../../utils/auth';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({ 
@@ -32,7 +33,7 @@ const LoginForm = () => {
 
         try {
             const { token, user } = await loginUser(formData.username, formData.password);
-            localStorage.setItem("authToken", token);
+            tokenStorage.set(token);
 
             // Handle user redirection based on role and step
             if (user.roleName === "ROLE_ADMIN") {

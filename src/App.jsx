@@ -35,34 +35,17 @@ import StudentProfile from './components/student/StudentProfile';
 import StudentBioData from './components/student/StudentBioData';
 import AdminDashboard from './components/admin/AdminDashboard';
 
-// Utility function to decode JWT token
-const decodeJWT = (token) => {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    return null;
-  }
-};
+// Import centralized auth utilities
+import { authUtils, jwtUtils } from './utils/auth';
 
-// Get user role from JWT token
+// Get user role using centralized utilities
 const getUserRole = () => {
-  const token = localStorage.getItem('authToken');
-  if (!token) return null;
-  const decoded = decodeJWT(token);
-  return decoded?.roles || null;
+  return jwtUtils.getUserRole();
 };
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem('authToken');
+  const isAuthenticated = authUtils.isAuthenticated();
   
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -73,7 +56,7 @@ const ProtectedRoute = ({ children }) => {
 
 // Role Protected Route Component
 const RoleProtectedRoute = ({ children, allowedRoles = [], deniedRoles = [], redirectPath = "/" }) => {
-  const isAuthenticated = !!localStorage.getItem('authToken');
+  const isAuthenticated = authUtils.isAuthenticated();
   const userRole = getUserRole();
   
   if (!isAuthenticated) {
