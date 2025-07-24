@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const ResetPasswordEmail = () => {
-  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
   const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1/users/request-password-reset`;
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,7 +27,7 @@ const ResetPasswordEmail = () => {
     
     try {
       const response = await axios.post(`${API_BASE_URL}`, { email });
-      console.log("response", response);
+      console.log('response', response);
       
       if (response.data?.headers?.responseCode === 200) {
         setMessageType('success');

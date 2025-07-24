@@ -1,9 +1,9 @@
 import axios from 'axios';
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1/chat`;
 
 export const sendMessage = async (message, token) => {
-  console.log("message ", message);
+  console.log('message ', message);
   return axios.post(`${API_BASE_URL}`, message, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -21,7 +21,7 @@ export const getMessagesByJob = async (jobId, token) => {
 };
 
 export const getMessagesForUser = async (jobId,userId, token) => {
-  console.log("jobIds ",jobId)
+  console.log('jobIds ',jobId);
   return axios.get(`${API_BASE_URL}/job/${jobId}/user/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`

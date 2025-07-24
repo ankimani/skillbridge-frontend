@@ -124,21 +124,21 @@ export default function Home() {
             {[
               {
                 icon: <UserPlus className="w-10 h-10 text-white" />,
-                bg: "bg-blue-600",
-                title: "1. Create Account",
-                description: "Join as a professional or student in minutes"
+                bg: 'bg-blue-600',
+                title: '1. Create Account',
+                description: 'Join as a professional or student in minutes'
               },
               {
                 icon: <DollarSign className="w-10 h-10 text-white" />,
-                bg: "bg-indigo-600",
-                title: "2. Get Coins",
-                description: "Students purchase coins to contact professionals"
+                bg: 'bg-indigo-600',
+                title: '2. Get Coins',
+                description: 'Students purchase coins to contact professionals'
               },
               {
                 icon: <MessageCircle className="w-10 h-10 text-white" />,
-                bg: "bg-blue-700",
-                title: "3. Connect & Engage",
-                description: "Professionals use coins to respond and start conversations"
+                bg: 'bg-blue-700',
+                title: '3. Connect & Engage',
+                description: 'Professionals use coins to respond and start conversations'
               }
             ].map((item, index) => (
               <div key={index} className={`${item.bg} p-10 rounded-xl text-white shadow-md hover:shadow-lg transition-shadow duration-300`}>
@@ -184,14 +184,14 @@ export default function Home() {
               
               {[
                 {
-                  name: "James, Computer Science Student",
-                  quote: "I was struggling with advanced algorithms until I connected with a senior developer through SkillBridge.",
-                  benefit: "Scored A+ in Algorithms course"
+                  name: 'James, Computer Science Student',
+                  quote: 'I was struggling with advanced algorithms until I connected with a senior developer through SkillBridge.',
+                  benefit: 'Scored A+ in Algorithms course'
                 },
                 {
-                  name: "Emma, MBA Candidate",
-                  quote: "The business strategy consultant I found helped me craft a winning case competition presentation.",
-                  benefit: "Won national case competition"
+                  name: 'Emma, MBA Candidate',
+                  quote: 'The business strategy consultant I found helped me craft a winning case competition presentation.',
+                  benefit: 'Won national case competition'
                 }
               ].map((testimonial, index) => (
                 <div key={`student-${index}`} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
@@ -217,14 +217,14 @@ export default function Home() {
               
               {[
                 {
-                  name: "Sarah, Math Tutor",
-                  quote: "SkillBridge helped me transition from classroom teaching to full-time tutoring.",
-                  benefit: "Built 50+ student client base"
+                  name: 'Sarah, Math Tutor',
+                  quote: 'SkillBridge helped me transition from classroom teaching to full-time tutoring.',
+                  benefit: 'Built 50+ student client base'
                 },
                 {
-                  name: "Dr. Lee, Research Consultant",
+                  name: 'Dr. Lee, Research Consultant',
                   quote: "I've guided 12 students through successful thesis defenses using SkillBridge.",
-                  benefit: "100% thesis success rate"
+                  benefit: '100% thesis success rate'
                 }
               ].map((testimonial, index) => (
                 <div key={`pro-${index}`} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
@@ -245,10 +245,10 @@ export default function Home() {
           {/* Stats */}
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { number: "10,000+", label: "Active Members", color: "text-blue-600" },
-              { number: "50,000+", label: "Hours of Guidance", color: "text-indigo-600" },
-              { number: "95%", label: "Satisfaction Rate", color: "text-blue-600" },
-              { number: "2,000+", label: "Successful Projects", color: "text-indigo-600" }
+              { number: '10,000+', label: 'Active Members', color: 'text-blue-600' },
+              { number: '50,000+', label: 'Hours of Guidance', color: 'text-indigo-600' },
+              { number: '95%', label: 'Satisfaction Rate', color: 'text-blue-600' },
+              { number: '2,000+', label: 'Successful Projects', color: 'text-indigo-600' }
             ].map((stat, index) => (
               <div key={index} className="bg-white p-8 rounded-xl shadow-sm">
                 <p className={`text-3xl font-bold ${stat.color} mb-2`}>{stat.number}</p>

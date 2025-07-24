@@ -1,5 +1,5 @@
-import createApiInstance from "./apiInterceptor";
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+import createApiInstance from './apiInterceptor';
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const API_URL = `${BACKEND_BASE_URL}/api/v1/dashboard`;
 const TRN_URL = `${BACKEND_BASE_URL}/api/v1`;
 
@@ -10,7 +10,7 @@ const transactionApi = createApiInstance(TRN_URL);
 // Get dashboard totals with growth metrics
 export const fetchDashboardTotals = async () => {
   try {
-    const response = await dashboardApi.get("/totals");
+    const response = await dashboardApi.get('/totals');
     
     return {
       totalProfessionals: response.data.totalProfessionals || 0,
@@ -26,7 +26,7 @@ export const fetchDashboardTotals = async () => {
       professionalGrowth: response.data.professionalGrowth || 0.0
     };
   } catch (error) {
-    console.error("Failed to fetch dashboard totals:", error);
+    console.error('Failed to fetch dashboard totals:', error);
     return {
       totalProfessionals: 0,
       monthlyRevenue: 0.0,
@@ -43,9 +43,9 @@ export const fetchDashboardTotals = async () => {
 };
 
 // Get revenue chart data by time range
-export const fetchRevenueChartData = async (range = "month") => {
+export const fetchRevenueChartData = async (range = 'month') => {
   try {
-    const response = await dashboardApi.get("/revenue-chart", {
+    const response = await dashboardApi.get('/revenue-chart', {
       params: { range }
     });
     
@@ -56,7 +56,7 @@ export const fetchRevenueChartData = async (range = "month") => {
       total: response.data.total || 0
     };
   } catch (error) {
-    console.error("Failed to fetch revenue chart data:", error);
+    console.error('Failed to fetch revenue chart data:', error);
     return {
       success: false,
       labels: [],
@@ -70,7 +70,7 @@ export const fetchRevenueChartData = async (range = "month") => {
 // Get revenue statistics with growth comparisons
 export const fetchRevenueStats = async () => {
   try {
-    const response = await dashboardApi.get("/revenue-stats");
+    const response = await dashboardApi.get('/revenue-stats');
     
     return {
       success: true,
@@ -82,7 +82,7 @@ export const fetchRevenueStats = async () => {
       yearlyGrowth: response.data.yearlyGrowth || 0.0
     };
   } catch (error) {
-    console.error("Failed to fetch revenue stats:", error);
+    console.error('Failed to fetch revenue stats:', error);
     return {
       success: false,
       currentMonth: 0.0,
@@ -115,7 +115,7 @@ export const fetchTransactions = async (
       ...(filters.stripeCheckoutId && { stripePaymentId: filters.stripeCheckoutId })
     };
 
-    const response = await transactionApi.get("/transactions/all", { params });
+    const response = await transactionApi.get('/transactions/all', { params });
 
     const responseData = response.data.body.data;
     
@@ -130,7 +130,7 @@ export const fetchTransactions = async (
       headers: response.data.headers
     };
   } catch (error) {
-    console.error("Failed to fetch transactions:", error);
+    console.error('Failed to fetch transactions:', error);
     return {
       success: false,
       transactions: [],
@@ -154,7 +154,7 @@ export const fetchTransactionDetails = async (transactionId) => {
       headers: response.data.headers
     };
   } catch (error) {
-    console.error("Failed to fetch transaction details:", error);
+    console.error('Failed to fetch transaction details:', error);
     return {
       success: false,
       transaction: null,

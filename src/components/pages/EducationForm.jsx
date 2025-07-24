@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi';
 import universitiesData from './worlduniversities.json';
-import ValidateEducation from "../services/ValidateEducation";
-import { saveEducationDetails } from "../services/educationService";
-import { useNavigate } from "react-router-dom";
-import { fetchUserProfile } from "../services/authProfile";
-import { getTeacherDetailsByUserId } from "../services/displayTeacherId";
+import ValidateEducation from '../services/ValidateEducation';
+import { saveEducationDetails } from '../services/educationService';
+import { useNavigate } from 'react-router-dom';
+import { fetchUserProfile } from '../services/authProfile';
+import { getTeacherDetailsByUserId } from '../services/displayTeacherId';
 
 const EducationForm = () => {
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ const EducationForm = () => {
   useEffect(() => {
     const loadUserProfileAndTeacherId = async () => {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem('authToken');
         const profile = await fetchUserProfile(token);
         const userId = profile.userId;
 
@@ -49,14 +49,14 @@ const EducationForm = () => {
           }));
         } else {
           setMessage({
-            type: "error",
-            text: teacherResponse.error || "Failed to load teacher details.",
+            type: 'error',
+            text: teacherResponse.error || 'Failed to load teacher details.',
           });
         }
       } catch (error) {
         setMessage({
-          type: "error",
-          text: "Failed to load user profile or teacher details.",
+          type: 'error',
+          text: 'Failed to load user profile or teacher details.',
         });
       }
     };
@@ -98,7 +98,7 @@ const EducationForm = () => {
       });
     }
 
-    if (name === 'institutionName' && value.trim() !== "") {
+    if (name === 'institutionName' && value.trim() !== '') {
       const filtered = universitiesData.filter((uni) =>
         `${uni.name}, ${uni.country}`.toLowerCase().includes(value.toLowerCase())
       );
@@ -126,24 +126,24 @@ const EducationForm = () => {
 
         if (response.success) {
           setMessage({
-            type: "success",
-            text: "Education details saved successfully",
+            type: 'success',
+            text: 'Education details saved successfully',
           });
           setTimeout(() => {
-            navigate("/experience");
+            navigate('/experience');
           }, 2000);
         } else {
           setMessage({
-            type: "error",
-            text: response.error || "Failed to save education details",
+            type: 'error',
+            text: response.error || 'Failed to save education details',
           });
         }
       } catch (error) {
-        console.error("Error saving education details:", error);
+        console.error('Error saving education details:', error);
         setProgress(0);
         setMessage({
-          type: "error",
-          text: "An error occurred while saving education details",
+          type: 'error',
+          text: 'An error occurred while saving education details',
         });
       } finally {
         setIsSubmitting(false);
@@ -167,9 +167,9 @@ const EducationForm = () => {
             {message && (
               <div
                 className={`mb-6 p-4 rounded-md ${
-                  message.type === "error" 
-                    ? "bg-red-50 text-red-700 border border-red-200" 
-                    : "bg-green-50 text-green-700 border border-green-200"
+                  message.type === 'error' 
+                    ? 'bg-red-50 text-red-700 border border-red-200' 
+                    : 'bg-green-50 text-green-700 border border-green-200'
                 }`}
               >
                 {message.text}
@@ -192,8 +192,8 @@ const EducationForm = () => {
                       onChange={handleChange}
                       className={`block w-full px-4 py-2 rounded-md border ${
                         errors.institutionName 
-                          ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                       } shadow-sm sm:text-sm`}
                       placeholder="Search for your institution"
                     />
@@ -219,8 +219,8 @@ const EducationForm = () => {
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
                       errors.degreeType 
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm bg-white`}
                   >
                     <option value="">Select degree type</option>
@@ -254,8 +254,8 @@ const EducationForm = () => {
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
                       errors.degreeName 
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm`}
                     placeholder="e.g. Bachelor of Science"
                   />
@@ -277,8 +277,8 @@ const EducationForm = () => {
                       onChange={handleChange}
                       className={`block w-full px-4 py-2 rounded-md border ${
                         errors.startDate 
-                          ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                       } shadow-sm sm:text-sm`}
                     />
                     {errors.startDate && (
@@ -297,8 +297,8 @@ const EducationForm = () => {
                       onChange={handleChange}
                       className={`block w-full px-4 py-2 rounded-md border ${
                         errors.endDate 
-                          ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                       } shadow-sm sm:text-sm`}
                     />
                     {errors.endDate && (
@@ -321,8 +321,8 @@ const EducationForm = () => {
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
                       errors.association 
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm bg-white`}
                   >
                     <option value="">Select mode of learning</option>
@@ -348,8 +348,8 @@ const EducationForm = () => {
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
                       errors.specialization 
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm`}
                     placeholder="e.g. Computer Science"
                   />
@@ -370,8 +370,8 @@ const EducationForm = () => {
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
                       errors.score 
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm`}
                     placeholder="e.g. 3.8 GPA or 85%"
                   />

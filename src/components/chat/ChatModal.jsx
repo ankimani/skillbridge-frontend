@@ -24,7 +24,7 @@
     // Format message timestamp
   const formatMessageTime = (dateInput) => {
     try {
-      console.log("Raw date input:", dateInput); // Debug the input
+      console.log('Raw date input:', dateInput); // Debug the input
       
       let date;
       
@@ -55,14 +55,14 @@
       }
 
       if (isNaN(date.getTime())) {
-        console.warn("Invalid date:", dateInput);
-        return "Just now";
+        console.warn('Invalid date:', dateInput);
+        return 'Just now';
       }
 
       return format(date, 'h:mm a');
     } catch (error) {
-      console.error("Date formatting error:", error);
-      return "Just now";
+      console.error('Date formatting error:', error);
+      return 'Just now';
     }
   };
     // Initialize user and token
@@ -92,7 +92,7 @@
         try {
           setLoading(true);
           const response = await getMessagesForUser(jobId, user.userId, token);
-          console.log("res ",response.data)
+          console.log('res ',response.data);
           if (response?.data) {
             const sortedMessages = response.data
               .filter(msg => msg?.createdAt)

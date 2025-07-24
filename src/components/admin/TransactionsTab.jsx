@@ -99,7 +99,7 @@ const TransactionsTab = () => {
         }));
       }
     } catch (error) {
-      console.error("Error loading transactions:", error);
+      console.error('Error loading transactions:', error);
       setTransactionsData(prev => ({
         ...prev,
         loading: false,
@@ -135,7 +135,7 @@ const TransactionsTab = () => {
         });
       }
     } catch (error) {
-      console.error("Error loading transaction details:", error);
+      console.error('Error loading transaction details:', error);
       setModalState({
         isOpen: true,
         loading: false,

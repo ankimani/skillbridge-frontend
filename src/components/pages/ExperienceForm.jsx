@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FiArrowRight, FiArrowLeft  } from 'react-icons/fi';
-import { fetchUserProfile } from "../services/authProfile";
-import { getTeacherDetailsByUserId } from "../services/displayTeacherId";
+import { fetchUserProfile } from '../services/authProfile';
+import { getTeacherDetailsByUserId } from '../services/displayTeacherId';
 const ExperienceForm = ({ onNext }) => {
   const [formData, setFormData] = useState({
     userId: null,
@@ -18,7 +18,7 @@ const ExperienceForm = ({ onNext }) => {
   useEffect(() => {
     const loadUserProfileAndTeacherId = async () => {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem('authToken');
         const profile = await fetchUserProfile(token);
         const userId = profile.userId;
   
@@ -38,14 +38,14 @@ const ExperienceForm = ({ onNext }) => {
           }));
         } else {
           setMessage({
-            type: "error",
-            text: teacherResponse.error || "Failed to load teacher details.",
+            type: 'error',
+            text: teacherResponse.error || 'Failed to load teacher details.',
           });
         }
       } catch (error) {
         setMessage({
-          type: "error",
-          text: "Failed to load user profile or teacher details.",
+          type: 'error',
+          text: 'Failed to load user profile or teacher details.',
         });
       }
     };

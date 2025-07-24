@@ -24,7 +24,7 @@ const LoginForm = () => {
         e.preventDefault();
         
         if (!formData.username.trim() || !formData.password.trim()) {
-            setError("Please fill in all fields");
+            setError('Please fill in all fields');
             return;
         }
 
@@ -36,25 +36,25 @@ const LoginForm = () => {
             tokenStorage.set(token);
 
             // Handle user redirection based on role and step
-            if (user.roleName === "ROLE_ADMIN") {
-                navigate("/admin");
-            } else if (user.roleName === "ROLE_TUTOR") {
+            if (user.roleName === 'ROLE_ADMIN') {
+                navigate('/admin');
+            } else if (user.roleName === 'ROLE_TUTOR') {
                 const tutorRoutes = {
-                    PROFILE: "/profileform",
-                    EDUCATION: "/education",
-                    EXPERIENCE: "/experience",
-                    SUBJECTS: "/subjects",
-                    DETAILS: "/details",
-                    COMPLETE: "/jobs"
+                    PROFILE: '/profileform',
+                    EDUCATION: '/education',
+                    EXPERIENCE: '/experience',
+                    SUBJECTS: '/subjects',
+                    DETAILS: '/details',
+                    COMPLETE: '/jobs'
                 };
-                navigate(tutorRoutes[user.stepName] || "/login");
-            } else if (user.roleName === "ROLE_STUDENT") {
-                navigate(user.stepName === "PROFILE" ? "/profile-info" : "/studentdashboard");
+                navigate(tutorRoutes[user.stepName] || '/login');
+            } else if (user.roleName === 'ROLE_STUDENT') {
+                navigate(user.stepName === 'PROFILE' ? '/profile-info' : '/studentdashboard');
             } else {
-                navigate("/");
+                navigate('/');
             }
         } catch (err) {
-            setError(err.message || "An unexpected error occurred");
+            setError(err.message || 'An unexpected error occurred');
         } finally {
             setIsLoading(false);
         }
@@ -106,7 +106,7 @@ const LoginForm = () => {
                                 <FaLock className="h-4 w-4 text-gray-400" />
                             </div>
                             <input
-                                type={showPassword ? "text" : "password"}
+                                type={showPassword ? 'text' : 'password'}
                                 name="password"
                                 id="password"
                                 className="block w-full pl-9 pr-9 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"

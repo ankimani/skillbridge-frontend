@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import Footer from '../shared/Footer';
 import CustomHeader from './CustomHeader';
 import { fetchTeacherProfile, updateTeacherProfile } from '../services/teacherProfile';
 import { fetchUserProfile } from '../services/authProfile';
-import {fetchTeacherEducation,updateTeacherEducation,createTeacherEducation}from '../services/teacherEducationProfile'
-import { fetchTeacherExperience,updateTeacherExperience, createTeacherExperience} from "../services/teacherExperienceProfile";
-import { fetchTeachingDetails,updateTeachingDetails} from "../services/teachingDetailsProfile";
-import { fetchSubjectExperience } from "../services/teacherSubjectsProfile";
+import {fetchTeacherEducation,updateTeacherEducation,createTeacherEducation}from '../services/teacherEducationProfile';
+import { fetchTeacherExperience,updateTeacherExperience, createTeacherExperience} from '../services/teacherExperienceProfile';
+import { fetchTeachingDetails,updateTeachingDetails} from '../services/teachingDetailsProfile';
+import { fetchSubjectExperience } from '../services/teacherSubjectsProfile';
 
 // Modal Components
 
@@ -219,13 +219,13 @@ const ProfileEditModal = ({ profile, onClose, onSave }) => {
   
   const ExperienceEditModal = ({ experience, onClose, onSave,currentExperienceIndex  }) => {
     const [formData, setFormData] = useState({
-      organizationName: experience.organizationName || "",
-      organizationUrl: experience.organizationUrl || "",
-      designation: experience.designation || "",
-      startDate: experience.startDate || "",
-      endDate: experience.currentJob ? "" : (experience.endDate || ""),
-      association: experience.association || "Full-time",
-      jobDescription: experience.jobDescription || "",
+      organizationName: experience.organizationName || '',
+      organizationUrl: experience.organizationUrl || '',
+      designation: experience.designation || '',
+      startDate: experience.startDate || '',
+      endDate: experience.currentJob ? '' : (experience.endDate || ''),
+      association: experience.association || 'Full-time',
+      jobDescription: experience.jobDescription || '',
       skills: experience.skills ? [...experience.skills] : [],
       currentJob: experience.currentJob || false
     });
@@ -237,7 +237,7 @@ const ProfileEditModal = ({ profile, onClose, onSave }) => {
         setFormData(prev => ({ 
           ...prev, 
           [name]: checked,
-          endDate: checked ? "" : prev.endDate // Clear endDate when currentJob is checked
+          endDate: checked ? '' : prev.endDate // Clear endDate when currentJob is checked
         }));
       } else {
         setFormData(prev => ({ 
@@ -272,7 +272,7 @@ const ProfileEditModal = ({ profile, onClose, onSave }) => {
         <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
           <div className="p-6">
             <h2 className="text-xl font-bold mb-4">
-              {currentExperienceIndex !== null ? "Edit Experience" : "Add New Experience"}
+              {currentExperienceIndex !== null ? 'Edit Experience' : 'Add New Experience'}
             </h2>
             
             <form onSubmit={handleSubmit}>
@@ -406,7 +406,7 @@ const ProfileEditModal = ({ profile, onClose, onSave }) => {
                   type="submit"
                   className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  {currentExperienceIndex !== null ? "Update Experience" : "Add Experience"}
+                  {currentExperienceIndex !== null ? 'Update Experience' : 'Add Experience'}
                 </button>
               </div>
             </form>
@@ -417,7 +417,7 @@ const ProfileEditModal = ({ profile, onClose, onSave }) => {
   };
   const TeachingDetailsEditModal = ({ details, onClose, onSave }) => {
     const [formData, setFormData] = useState(details);
-  console.log("data to update",formData)
+  console.log('data to update',formData);
     const handleChange = (e) => {
       const { name, value, type, checked } = e.target;
       setFormData(prev => ({
@@ -443,7 +443,7 @@ const ProfileEditModal = ({ profile, onClose, onSave }) => {
                       const value = e.target.value;
                       setFormData(prev => ({
                         ...prev,
-                        [e.target.name]: value === "" ? "" : Number(value)
+                        [e.target.name]: value === '' ? '' : Number(value)
                       }));
                     }}
                     className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
@@ -625,10 +625,10 @@ export default function TeacherProfile() {
   const [experienceList, setExperienceList] = useState([]);
   const [teachingDetails, setTeachingDetails] = useState({
     teacherId: '',
-    rate: "hourly",
+    rate: 'hourly',
     maxFee: 0,
     minFee: 0,
-    paymentDetails: "",
+    paymentDetails: '',
     totalExpYears: 0,
     onlineExpYears: 0,
     travelWillingness: false,
@@ -637,7 +637,7 @@ export default function TeacherProfile() {
     homeAvailability: false,
     homeworkHelp: false,
     currentlyEmployed: false,
-    workPreference: "",
+    workPreference: '',
   });
   const [subjects, setSubjects] = useState([]);
   // Modal states (keep these the same)
@@ -701,7 +701,7 @@ export default function TeacherProfile() {
             degreeName: edu.degreeName || '',
             startDate: edu.startDate || '',
             endDate: edu.endDate || '',
-            association: edu.association || "Full-time",
+            association: edu.association || 'Full-time',
             specialization: edu.specialization || '',
             score: edu.score || 0
           }))
@@ -712,12 +712,12 @@ export default function TeacherProfile() {
           (experienceData || []).map(exp => ({
             experienceId: exp.experienceId,
             organizationName: exp.organizationName || '',
-            organizationUrl: exp.organizationUrl || "#",
+            organizationUrl: exp.organizationUrl || '#',
             designation: exp.designation || '',
-            jobDescription: exp.jobDescription || "No description provided",
+            jobDescription: exp.jobDescription || 'No description provided',
             startDate: exp.startDate || '',
             endDate: exp.endDate || '',
-            association: exp.association || "Full-time",
+            association: exp.association || 'Full-time',
             skills: exp.skills || [],
             currentJob: exp.currentJob || false
           }))
@@ -730,10 +730,10 @@ export default function TeacherProfile() {
         if (teachingDetailsData) {
           setTeachingDetails({
             teacherId: teachingDetailsData.teacherId,
-            rate: teachingDetailsData.rate || "hourly",
+            rate: teachingDetailsData.rate || 'hourly',
             maxFee: teachingDetailsData.maxFee || 0,
             minFee: teachingDetailsData.minFee || 0,
-            paymentDetails: teachingDetailsData.paymentDetails || "",
+            paymentDetails: teachingDetailsData.paymentDetails || '',
             totalExpYears: teachingDetailsData.totalExpYears || 0,
             onlineExpYears: teachingDetailsData.onlineExpYears || 0,
             travelWillingness: teachingDetailsData.travelWillingness || false,
@@ -742,16 +742,16 @@ export default function TeacherProfile() {
             homeAvailability: teachingDetailsData.homeAvailability || false,
             homeworkHelp: teachingDetailsData.homeworkHelp || false,
             currentlyEmployed: teachingDetailsData.currentlyEmployed || false,
-            workPreference: teachingDetailsData.workPreference || "",
+            workPreference: teachingDetailsData.workPreference || '',
           });
         } else {
           // Keep default empty state if no teaching details exist
           setTeachingDetails({
             teacherId: '',
-            rate: "hourly",
+            rate: 'hourly',
             maxFee: 0,
             minFee: 0,
-            paymentDetails: "",
+            paymentDetails: '',
             totalExpYears: 0,
             onlineExpYears: 0,
             travelWillingness: false,
@@ -760,14 +760,14 @@ export default function TeacherProfile() {
             homeAvailability: false,
             homeworkHelp: false,
             currentlyEmployed: false,
-            workPreference: "",
+            workPreference: '',
           });
         }
         
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching profile data:", err);
-        setError(err.message || "Failed to load profile data");
+        console.error('Error fetching profile data:', err);
+        setError(err.message || 'Failed to load profile data');
         setLoading(false);
       }
     };
@@ -852,7 +852,7 @@ export default function TeacherProfile() {
       
       setShowProfileModal(false);
     } catch (error) {
-      console.error("Failed to update profile:", error);
+      console.error('Failed to update profile:', error);
     }
   };
   const saveEducation = async (data) => {
@@ -907,8 +907,8 @@ export default function TeacherProfile() {
       setShowEducationModal(false);
       setCurrentEducationIndex(null);
     } catch (error) {
-      console.error("Error saving education:", error);
-      setError(error.message || "Failed to save education. Please try again.");
+      console.error('Error saving education:', error);
+      setError(error.message || 'Failed to save education. Please try again.');
     }
   };
 
@@ -970,8 +970,8 @@ export default function TeacherProfile() {
       setShowExperienceModal(false);
       setCurrentExperienceIndex(null);
     } catch (error) {
-      console.error("Error saving experience:", error);
-      setError(error.message || "Failed to save experience. Please try again.");
+      console.error('Error saving experience:', error);
+      setError(error.message || 'Failed to save experience. Please try again.');
     }
   };
 
@@ -987,7 +987,7 @@ export default function TeacherProfile() {
         rate: data.rate,
         maxFee: Number(data.maxFee),
         minFee: Number(data.minFee),
-        paymentDetails: data.paymentDetails || "",
+        paymentDetails: data.paymentDetails || '',
         totalExpYears: Number(data.totalExpYears),
         onlineExpYears: Number(data.onlineExpYears),
         travelWillingness: data.travelWillingness,
@@ -1013,8 +1013,8 @@ export default function TeacherProfile() {
       setTeachingDetails(updatedDetails);
       setShowTeachingModal(false);
     } catch (error) {
-      console.error("Failed to update teaching details:", error);
-      setError(error.message || "Failed to update teaching details. Please try again.");
+      console.error('Failed to update teaching details:', error);
+      setError(error.message || 'Failed to update teaching details. Please try again.');
     }
   };
 
@@ -1323,7 +1323,7 @@ export default function TeacherProfile() {
                     
                     <div className="flex items-center mt-1">
                       <a 
-                        href={experience.organizationUrl || "#"} 
+                        href={experience.organizationUrl || '#'} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 font-medium inline-flex items-center"
@@ -1370,7 +1370,7 @@ export default function TeacherProfile() {
                 <div className="mt-4">
                   <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Key Responsibilities</h4>
                   <ul className="space-y-3">
-                    {experience.jobDescription.split("\n").filter(Boolean).map((point, idx) => (
+                    {experience.jobDescription.split('\n').filter(Boolean).map((point, idx) => (
                       <li key={idx} className="flex items-start">
                         <span className="flex-shrink-0 w-1.5 h-1.5 mt-2.5 bg-blue-500 rounded-full mr-3"></span>
                         <span className="text-gray-700">{point}</span>
@@ -1601,7 +1601,7 @@ export default function TeacherProfile() {
             <h4 className="font-medium text-pink-800">Work Preference</h4>
           </div>
           <p className="text-gray-700 font-semibold">
-            {teachingDetails?.workPreference || "Not specified"}
+            {teachingDetails?.workPreference || 'Not specified'}
           </p>
         </div>
 
@@ -1641,13 +1641,13 @@ export default function TeacherProfile() {
       {showEducationModal && (
         <EducationEditModal
           education={currentEducationIndex !== null ? educationList[currentEducationIndex] : {
-            institutionName: "",
-            degreeType: "Bachelor",
-            degreeName: "",
-            startDate: "",
-            endDate: "",
-            association: "Full-time",
-            specialization: "",
+            institutionName: '',
+            degreeType: 'Bachelor',
+            degreeName: '',
+            startDate: '',
+            endDate: '',
+            association: 'Full-time',
+            specialization: '',
             score: 0,
           }}
           onClose={() => setShowEducationModal(false)}
@@ -1658,13 +1658,13 @@ export default function TeacherProfile() {
       {showExperienceModal && (
        <ExperienceEditModal
        experience={currentExperienceIndex !== null ? experienceList[currentExperienceIndex] : {
-         organizationName: "",
-         organizationUrl: "",
-         designation: "",
-         startDate: "",
-         endDate: "",
-         association: "Full-time",
-         jobDescription: "",
+         organizationName: '',
+         organizationUrl: '',
+         designation: '',
+         startDate: '',
+         endDate: '',
+         association: 'Full-time',
+         jobDescription: '',
          skills: [],
          currentJob: false,
        }}

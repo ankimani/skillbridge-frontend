@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi';
-import ValidateTeachingDetails from "../services/ValidateTeachingDetails";
-import { saveTeachingDetails } from "../services/teachingDetailsService";
-import { useNavigate } from "react-router-dom";
-import { fetchUserProfile } from "../services/authProfile";
-import { getTeacherDetailsByUserId } from "../services/displayTeacherId";
+import ValidateTeachingDetails from '../services/ValidateTeachingDetails';
+import { saveTeachingDetails } from '../services/teachingDetailsService';
+import { useNavigate } from 'react-router-dom';
+import { fetchUserProfile } from '../services/authProfile';
+import { getTeacherDetailsByUserId } from '../services/displayTeacherId';
 
 const TeachingDetailsForm = () => {
   const [message, setMessage] = useState(null);
@@ -34,7 +34,7 @@ const TeachingDetailsForm = () => {
   useEffect(() => {
     const loadUserProfileAndTeacherId = async () => {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem('authToken');
         const profile = await fetchUserProfile(token);
         const userId = profile.userId;
 
@@ -52,14 +52,14 @@ const TeachingDetailsForm = () => {
           }));
         } else {
           setMessage({
-            type: "error",
-            text: teacherResponse.error || "Failed to load teacher details.",
+            type: 'error',
+            text: teacherResponse.error || 'Failed to load teacher details.',
           });
         }
       } catch (error) {
         setMessage({
-          type: "error",
-          text: "Failed to load user profile or teacher details.",
+          type: 'error',
+          text: 'Failed to load user profile or teacher details.',
         });
       }
     };
@@ -117,22 +117,22 @@ const TeachingDetailsForm = () => {
 
         if (response.success) {
           setMessage({
-            type: "success",
-            text: "Teaching details saved successfully",
+            type: 'success',
+            text: 'Teaching details saved successfully',
           });
-          setTimeout(() => navigate("/complete"), 2000);
+          setTimeout(() => navigate('/complete'), 2000);
         } else {
           setMessage({
-            type: "error",
-            text: response.error || "Failed to save teaching details",
+            type: 'error',
+            text: response.error || 'Failed to save teaching details',
           });
         }
       } catch (error) {
-        console.error("Error saving teaching details:", error);
+        console.error('Error saving teaching details:', error);
         setProgress(0);
         setMessage({
-          type: "error",
-          text: "An error occurred while saving teaching details",
+          type: 'error',
+          text: 'An error occurred while saving teaching details',
         });
       } finally {
         setIsSubmitting(false);
@@ -155,9 +155,9 @@ const TeachingDetailsForm = () => {
           <form onSubmit={handleSubmit} className="p-6">
             {message && (
               <div className={`mb-6 p-4 rounded-md ${
-                message.type === "error" 
-                  ? "bg-red-50 text-red-700 border border-red-200" 
-                  : "bg-green-50 text-green-700 border border-green-200"
+                message.type === 'error' 
+                  ? 'bg-red-50 text-red-700 border border-red-200' 
+                  : 'bg-green-50 text-green-700 border border-green-200'
               }`}>
                 {message.text}
               </div>
@@ -176,8 +176,8 @@ const TeachingDetailsForm = () => {
                     value={formData.rate}
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
-                      errors.rate ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                      : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      errors.rate ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm bg-white`}
                   >
                     <option value="">Select rate type</option>
@@ -208,8 +208,8 @@ const TeachingDetailsForm = () => {
                         onChange={handleChange}
                         placeholder="0.00"
                         className={`block w-full pl-7 pr-12 py-2 rounded-md border ${
-                          errors.minFee ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          errors.minFee ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                         } shadow-sm sm:text-sm`}
                       />
                     </div>
@@ -233,8 +233,8 @@ const TeachingDetailsForm = () => {
                         onChange={handleChange}
                         placeholder="0.00"
                         className={`block w-full pl-7 pr-12 py-2 rounded-md border ${
-                          errors.maxFee ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          errors.maxFee ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                         } shadow-sm sm:text-sm`}
                       />
                     </div>
@@ -255,8 +255,8 @@ const TeachingDetailsForm = () => {
                     onChange={handleChange}
                     rows={3}
                     className={`block w-full px-4 py-2 rounded-md border ${
-                      errors.paymentDetails ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                      : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      errors.paymentDetails ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm`}
                     placeholder="Describe your fee structure, discounts, etc."
                   />
@@ -275,8 +275,8 @@ const TeachingDetailsForm = () => {
                       onChange={handleChange}
                       min="0"
                       className={`block w-full px-4 py-2 rounded-md border ${
-                        errors.totalExpYears ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        errors.totalExpYears ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                       } shadow-sm sm:text-sm`}
                     />
                     {errors.totalExpYears && (
@@ -295,8 +295,8 @@ const TeachingDetailsForm = () => {
                       onChange={handleChange}
                       min="0"
                       className={`block w-full px-4 py-2 rounded-md border ${
-                        errors.onlineExpYears ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        errors.onlineExpYears ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                       } shadow-sm sm:text-sm`}
                     />
                     {errors.onlineExpYears && (
@@ -351,8 +351,8 @@ const TeachingDetailsForm = () => {
                       onChange={handleChange}
                       min="0"
                       className={`block w-full px-4 py-2 rounded-md border ${
-                        errors.travelDistance ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        errors.travelDistance ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                       } shadow-sm sm:text-sm`}
                     />
                     {errors.travelDistance && (
@@ -461,8 +461,8 @@ const TeachingDetailsForm = () => {
                     value={formData.workPreference}
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
-                      errors.workPreference ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                      : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      errors.workPreference ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm bg-white`}
                   >
                     <option value="">Select work preference</option>

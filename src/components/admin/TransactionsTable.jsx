@@ -34,7 +34,7 @@ const formatDate = (dateInput) => {
     
     return '';
   } catch (e) {
-    console.error("Error formatting date:", e, dateInput);
+    console.error('Error formatting date:', e, dateInput);
     return '';
   }
 };

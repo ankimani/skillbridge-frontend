@@ -1,6 +1,6 @@
 import axios from 'axios';
-import createApiInstance from "./apiInterceptor";
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+import createApiInstance from './apiInterceptor';
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1/teachers`;
 const teachersApi= createApiInstance(API_BASE_URL);
 export const fetchAllTeachers = async (filters = {}) => {
@@ -53,7 +53,7 @@ export const profileByTeacherId = async (teacherId) => {
   };
   export const allTeachersPaginated = async (page = 1, size = 5, displayName = '') => {
     try {
-      const response = await teachersApi.get(`/profiles/all`, {
+      const response = await teachersApi.get('/profiles/all', {
         params: {
           page,
           size,

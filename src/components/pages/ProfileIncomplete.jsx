@@ -1,5 +1,5 @@
-import React from "react";
-import { FiAlertTriangle, FiX, FiEdit2, FiEyeOff } from "react-icons/fi";
+import React from 'react';
+import { FiAlertTriangle, FiX, FiEdit2, FiEyeOff } from 'react-icons/fi';
 
 const ProfileIncomplete = ({ onComplete, onCancel }) => {
   return (
@@ -69,7 +69,7 @@ const ProfileIncomplete = ({ onComplete, onCancel }) => {
           </div>
 
           <p className="text-sm text-gray-500 mt-8 text-center">
-            Need help? Contact us at{" "}
+            Need help? Contact us at{' '}
             <a href="mailto:support@skillbridge.com" className="text-amber-600 hover:underline">
               support@skillbridge.com
             </a>

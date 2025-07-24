@@ -1,5 +1,5 @@
-import axios from "axios";
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+import axios from 'axios';
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1/jobs/users`;
 const UPDATE_JOB_URL =`${BACKEND_BASE_URL}/api/v1/update/jobs`;
 const CLOSE_JOB_URL = `${BACKEND_BASE_URL}/api/v1/close/jobs`;
@@ -19,13 +19,13 @@ export const fetchMyRequirements = async (userId, page = 1, size = 10, token) =>
     const resCode = response.data?.headers?.responseCode;
 
     if (resCode === 404) {
-      console.warn("No results found");
+      console.warn('No results found');
       return []; // or [] if you prefer
     }
 
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to fetch requirements:", error);
+    console.error('Failed to fetch requirements:', error);
     throw error;
   }
 };
@@ -45,7 +45,7 @@ export const closeRequirement = async (jobId, userId, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to close requirement:", error);
+    console.error('Failed to close requirement:', error);
     throw error;
   }
 };
@@ -64,14 +64,14 @@ export const updateJobRequirement = async (jobId, userId, updatedData, token) =>
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to update job requirement:", error);
+    console.error('Failed to update job requirement:', error);
     throw error;
   }
 };
 
 export const getJobById = async (jobId, token) => {
   try {
-    console.log("jobId ",jobId)
+    console.log('jobId ',jobId);
     const response = await axios.get(
       `${GET_JOB_BY_ID_URL}/${jobId}`,
       {
@@ -82,7 +82,7 @@ export const getJobById = async (jobId, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to fetch job details:", error);
+    console.error('Failed to fetch job details:', error);
     throw error;
   }
 };

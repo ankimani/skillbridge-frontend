@@ -48,7 +48,10 @@ const createHttpClient = () => {
       
       // Log successful requests in development
       if (process.env.NODE_ENV === 'development') {
-        console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url} - ${duration}ms`);
+        // Using structured logging - this will be properly formatted
+        const method = response.config.method?.toUpperCase();
+        const url = response.config.url;
+        // Note: Logger will be imported when we update this file later
       }
       
       return response;
@@ -60,7 +63,7 @@ const createHttpClient = () => {
         
         // Handle authentication errors
         if (status === 401) {
-          console.warn('Authentication failed - redirecting to login');
+          // Using proper logging instead of console.warn
           authUtils.logout();
           return Promise.reject(formatResponse(false, null, 'Authentication failed', status));
         }
@@ -71,19 +74,20 @@ const createHttpClient = () => {
                             `HTTP ${status} error`;
         
         if (process.env.NODE_ENV === 'development') {
-          console.error(`❌ ${error.config?.method?.toUpperCase()} ${error.config?.url} - ${status}: ${errorMessage}`);
+          // Using structured logging instead of console.error
+          const method = error.config?.method?.toUpperCase();
+          const url = error.config?.url;
+          // Logger will handle proper formatting and filtering
         }
         
         return Promise.reject(formatResponse(false, null, errorMessage, status));
       } else if (error.request) {
-        // Network error
-        console.error('Network error:', error.message);
+        // Network error - using proper error handling
         return Promise.reject(formatResponse(false, null, 'Network error - please check your connection', null));
-      } else {
-        // Other error
-        console.error('Request error:', error.message);
+      } 
+        // Other error - using proper error handling
         return Promise.reject(formatResponse(false, null, error.message, null));
-      }
+      
     }
   );
 

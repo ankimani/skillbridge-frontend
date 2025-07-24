@@ -1,5 +1,5 @@
-import axios from "axios";
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+import axios from 'axios';
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1`;
 
 // Buy coins endpoint
@@ -17,7 +17,7 @@ export const buyCoins = async (userId, payload, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to buy coins:", error);
+    console.error('Failed to buy coins:', error);
     throw error;
   }
 };
@@ -41,7 +41,7 @@ export const deductCoins = async (userId, payload, token) => {
     );
     return response.data; // Return the full response data including headers
   } catch (error) {
-    console.error("Failed to deduct coins:", error);
+    console.error('Failed to deduct coins:', error);
     throw error;
   }
 };
@@ -61,10 +61,10 @@ export const deductCoinsClient = async (teacherId,userId, payload, token) => {
         }
       }
     );
-    console.log("response data",response.data)
+    console.log('response data',response.data);
     return response.data; // Return the full response data including headers
   } catch (error) {
-    console.error("Failed to deduct coins:", error);
+    console.error('Failed to deduct coins:', error);
     throw error;
   }
 };
@@ -81,7 +81,7 @@ export const getCoinBalance = async (userId, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to fetch coin balance:", error);
+    console.error('Failed to fetch coin balance:', error);
     throw error;
   }
 };
@@ -99,7 +99,7 @@ export const calculateCoinPrice = async (coins, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to calculate coin price:", error);
+    console.error('Failed to calculate coin price:', error);
     throw error;
   }
 };
@@ -117,7 +117,7 @@ export const getTransactions = async (userId, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to fetch transactions:", error);
+    console.error('Failed to fetch transactions:', error);
     throw error;
   }
 };

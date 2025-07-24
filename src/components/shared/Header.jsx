@@ -1,5 +1,5 @@
-import { Fragment, useState } from 'react'
-import { Dialog, Disclosure, Popover, Transition } from '@headlessui/react'
+import { Fragment, useState } from 'react';
+import { Dialog, Disclosure, Popover, Transition } from '@headlessui/react';
 import {
   ArrowPathIcon,
   MenuIcon,
@@ -8,25 +8,25 @@ import {
   FingerPrintIcon,
   SquaresPlusIcon,
   XIcon,
-} from '@heroicons/react/outline'
-import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/solid'
+} from '@heroicons/react/outline';
+import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/solid';
 
 const Teachers = [
   { name: 'All Teachers', href: '#' },
   { name: 'Online Teachers', href: '#' },
   { name: 'Home Teachers', href: '#' },
-]
+];
 const jobs = [
     { name: 'All Teacher Jobs', href: '#' },
     { name: 'Online Teacher Jobs', href: '#' },
     { name: 'Home Teacher Jobs', href: '#' },
-  ]
+  ];
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="bg-white">
@@ -230,5 +230,5 @@ export default function Header() {
         </Dialog.Panel>
       </Dialog>
     </header>
-  )
+  );
 }

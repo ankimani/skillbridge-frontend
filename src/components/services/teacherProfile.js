@@ -1,7 +1,7 @@
 // src/services/teacherProfile.js
-import axios from "axios";
+import axios from 'axios';
 
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const API_URL = `${BACKEND_BASE_URL}/api/v1/profiles`;
 
 export const fetchTeacherProfile = async (userId, token) => {
@@ -13,7 +13,7 @@ export const fetchTeacherProfile = async (userId, token) => {
     });
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to fetch teacher profile:", error);
+    console.error('Failed to fetch teacher profile:', error);
     throw error;
   }
 };
@@ -38,7 +38,7 @@ export const updateTeacherProfile = async (userId, profileData, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to update teacher profile:", error);
+    console.error('Failed to update teacher profile:', error);
     throw error;
   }
 };

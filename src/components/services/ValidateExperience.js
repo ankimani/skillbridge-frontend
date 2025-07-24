@@ -2,15 +2,15 @@ export default function ValidationExperience(formData) {
     const errors = {};
   
     if (!formData.organizationName) {
-      errors.organizationName = "Organization name is required";
+      errors.organizationName = 'Organization name is required';
     }
   
     if (!formData.designation) {
-      errors.designation = "Designation is required";
+      errors.designation = 'Designation is required';
     }
   
     if (!formData.startDate) {
-      errors.startDate = "Start Date is required";
+      errors.startDate = 'Start Date is required';
     }
   
     // Validation logic for currentJob and endDate
@@ -20,7 +20,7 @@ export default function ValidationExperience(formData) {
       }
     } else {
       if (!formData.endDate) {
-        errors.endDate = "End Date is required if not currently working";
+        errors.endDate = 'End Date is required if not currently working';
       }
     }
   

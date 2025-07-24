@@ -190,7 +190,7 @@ const ChangePasswordModal = ({ onClose, onSave = () => {} })=> {
               </label>
               <div className="relative">
                 <input
-                  type={showPasswords.current ? "text" : "password"}
+                  type={showPasswords.current ? 'text' : 'password'}
                   id="currentPassword"
                   name="currentPassword"
                   className={`w-full px-3 py-2 text-sm border rounded-md focus:ring-blue-500 focus:border-blue-500 pr-10 text-gray-900 ${
@@ -224,7 +224,7 @@ const ChangePasswordModal = ({ onClose, onSave = () => {} })=> {
               </label>
               <div className="relative">
                 <input
-                  type={showPasswords.new ? "text" : "password"}
+                  type={showPasswords.new ? 'text' : 'password'}
                   id="newPassword"
                   name="newPassword"
                   className={`w-full px-3 py-2 text-sm border rounded-md focus:ring-blue-500 focus:border-blue-500 pr-10 text-gray-900 ${
@@ -263,7 +263,7 @@ const ChangePasswordModal = ({ onClose, onSave = () => {} })=> {
               </label>
               <div className="relative">
                 <input
-                  type={showPasswords.confirm ? "text" : "password"}
+                  type={showPasswords.confirm ? 'text' : 'password'}
                   id="confirmPassword"
                   name="confirmPassword"
                   className={`w-full px-3 py-2 text-sm border rounded-md focus:ring-blue-500 focus:border-blue-500 pr-10 text-gray-900 ${

@@ -28,7 +28,7 @@ const RevenueOverview = () => {
           });
         }
       } catch (error) {
-        console.error("Error loading chart data:", error);
+        console.error('Error loading chart data:', error);
       } finally {
         setLoading(false);
       }

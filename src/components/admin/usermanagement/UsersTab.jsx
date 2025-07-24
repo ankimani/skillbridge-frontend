@@ -99,7 +99,7 @@ const UsersTab = () => {
       console.error('Error fetching roles:', err);
       setError('Failed to load roles. Please try again later.');
     }
-  }
+  };
 
   // Fetch users when filters or page changes
   useEffect(() => {

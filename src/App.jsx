@@ -55,7 +55,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 // Role Protected Route Component
-const RoleProtectedRoute = ({ children, allowedRoles = [], deniedRoles = [], redirectPath = "/" }) => {
+const RoleProtectedRoute = ({ children, allowedRoles = [], deniedRoles = [], redirectPath = '/' }) => {
   const isAuthenticated = authUtils.isAuthenticated();
   const userRole = getUserRole();
   

@@ -18,10 +18,10 @@ const BillingInfoModal = ({ userId , isOpen, onClose, onContinue, initialData })
   // Pre-fill form if initialData is provided
   useEffect(() => {
     if (isOpen) {
-      console.log("Modal opened with initialData:", initialData);
+      console.log('Modal opened with initialData:', initialData);
       if (initialData) {
         const billingData = initialData.body?.data || initialData;
-        console.log("Extracted billing data:", billingData);
+        console.log('Extracted billing data:', billingData);
         setFormData({
           fullName: billingData.body.data.fullName || '',
           country: billingData.body.data.country || '',

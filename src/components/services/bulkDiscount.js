@@ -1,5 +1,5 @@
-import createApiInstance from "./apiInterceptor";
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+import createApiInstance from './apiInterceptor';
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const BASE_URL = `${BACKEND_BASE_URL}/api/v1/bulk-discounts`;
 const bulkDiscountApi = createApiInstance(BASE_URL);
 
@@ -7,7 +7,7 @@ export const BulkDiscountService = {
   // Get all active bulk discounts
   getAllActiveDiscounts: async () => {
     try {
-      const response = await bulkDiscountApi.get("/active");
+      const response = await bulkDiscountApi.get('/active');
       
       return {
         success: true,
@@ -15,11 +15,11 @@ export const BulkDiscountService = {
         headers: response.data.headers
       };
     } catch (error) {
-      console.error("Failed to fetch bulk discounts:", error);
+      console.error('Failed to fetch bulk discounts:', error);
       return {
         success: false,
         error: error.response?.data?.headers?.customerMessage || 
-              "Failed to fetch bulk discounts",
+              'Failed to fetch bulk discounts',
         status: error.response?.status
       };
     }
@@ -28,7 +28,7 @@ export const BulkDiscountService = {
   // Add new bulk discount
   addBulkDiscount: async (discountData) => {
     try {
-      const response = await bulkDiscountApi.post("/", discountData);
+      const response = await bulkDiscountApi.post('/', discountData);
       
       return {
         success: true,
@@ -36,11 +36,11 @@ export const BulkDiscountService = {
         headers: response.data.headers
       };
     } catch (error) {
-      console.error("Failed to add bulk discount:", error);
+      console.error('Failed to add bulk discount:', error);
       return {
         success: false,
         error: error.response?.data?.headers?.customerMessage || 
-              "Failed to add bulk discount",
+              'Failed to add bulk discount',
         status: error.response?.status
       };
     }
@@ -57,7 +57,7 @@ export const BulkDiscountService = {
         headers: response.data.headers
       };
     } catch (error) {
-      console.error("Failed to update bulk discount:", error);
+      console.error('Failed to update bulk discount:', error);
       return {
         success: false,
         error: error.response?.data?.headers?.customerMessage || 
@@ -78,7 +78,7 @@ export const BulkDiscountService = {
         headers: response.data.headers
       };
     } catch (error) {
-      console.error("Failed to deactivate discount:", error);
+      console.error('Failed to deactivate discount:', error);
       return {
         success: false,
         error: error.response?.data?.headers?.customerMessage || 
@@ -98,7 +98,7 @@ export const BulkDiscountService = {
         headers: response.data.headers
       };
     } catch (error) {
-      console.error("Failed to activate discount:", error);
+      console.error('Failed to activate discount:', error);
       return {
         success: false,
         error: error.response?.data?.headers?.customerMessage || 

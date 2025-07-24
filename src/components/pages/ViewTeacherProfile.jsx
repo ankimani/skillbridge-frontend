@@ -98,7 +98,7 @@ const ViewTeacherProfile = () => {
                 setChatError('Please login to connect with the teacher');
                 return;
             }
-            const firstFiveWords = selectedJob.jobRequirements.split(" ").slice(0, 5).join(" ");
+            const firstFiveWords = selectedJob.jobRequirements.split(' ').slice(0, 5).join(' ');
             const payload = {
                 coins: selectedJob.coins,
                 reason: `For contacting Professional ${teacher.displayName} regarding job# ${selectedJob.jobId}-${firstFiveWords}`,

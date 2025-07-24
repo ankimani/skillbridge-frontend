@@ -1,37 +1,24 @@
-import axios from "axios";
-
-const API_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
-const API_URL = `${API_BASE_URL}/api/v1/users`;
-const API_URL_ME = `${API_URL}/me`;
+import apiClient from '../../services/httpClient';
+import { API_CONFIG } from '../../config/api';
 
 // Get auth profile from backend
-export const fetchUserProfile = async (token) => {
-  try {
-    const response = await axios.get(API_URL_ME, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data?.body?.data; // Return the 'data' object
-  } catch (error) {
-    console.error("Failed to fetch user profile:", error);
-    throw error;
-  }
+export const fetchUserProfile = async () => {
+  const response = await apiClient.get(`${API_CONFIG.ENDPOINTS.USERS}/me`);
+  
+  if (response.success) {
+    return response.data?.body?.data;
+  } 
+    throw new Error(response.error || 'Failed to fetch user profile');
+  
 };
 
 // Get username by user ID
-export const fetchUsernameById = async (userId, token) => {
-  try {
-    const response = await axios.get(`${API_URL}/info/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data?.body?.data?.username; // Return just the username
-  } catch (error) {
-    console.error(`Failed to fetch username for user ${userId}:`, error);
-    throw error;
-  }
+export const fetchUsernameById = async (userId) => {
+  const response = await apiClient.get(`${API_CONFIG.ENDPOINTS.USERS}/info/${userId}`);
+  
+  if (response.success) {
+    return response.data?.body?.data?.username;
+  } 
+    throw new Error(response.error || `Failed to fetch username for user ${userId}`);
+  
 };

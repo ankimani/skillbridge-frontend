@@ -1,6 +1,6 @@
 // Add this to your services/teacherProfile.js file (or create it if it doesn't exist)
-import { getTeacherDetailsByUserId } from "./displayTeacherId";
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+import { getTeacherDetailsByUserId } from './displayTeacherId';
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 export const fetchTeacherExperience = async (userId, token) => {
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/experiences/teacher/${userId}`, {
       headers: {

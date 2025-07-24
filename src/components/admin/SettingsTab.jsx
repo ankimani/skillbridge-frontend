@@ -112,7 +112,7 @@ const SettingsTab = () => {
               </label>
               <div className="relative">
                 <input
-                  type={showPasswords.old ? "text" : "password"}
+                  type={showPasswords.old ? 'text' : 'password'}
                   id="oldPassword"
                   name="oldPassword"
                   value={formData.oldPassword}
@@ -138,7 +138,7 @@ const SettingsTab = () => {
               </label>
               <div className="relative">
                 <input
-                  type={showPasswords.new ? "text" : "password"}
+                  type={showPasswords.new ? 'text' : 'password'}
                   id="newPassword"
                   name="newPassword"
                   value={formData.newPassword}
@@ -167,7 +167,7 @@ const SettingsTab = () => {
               </label>
               <div className="relative">
                 <input
-                  type={showPasswords.confirm ? "text" : "password"}
+                  type={showPasswords.confirm ? 'text' : 'password'}
                   id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}

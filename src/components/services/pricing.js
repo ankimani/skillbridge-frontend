@@ -1,5 +1,5 @@
-import createApiInstance from "./apiInterceptor"; // Adjust the import path as needed
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+import createApiInstance from './apiInterceptor'; // Adjust the import path as needed
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const BASE_URL = `${BACKEND_BASE_URL}/api/v1/pricing`;
 const pricingApi = createApiInstance(BASE_URL);
 
@@ -7,7 +7,7 @@ export const PricingService = {
   // Get current pricing
   getCurrentPricing: async () => {
     try {
-      const response = await pricingApi.get("/current");
+      const response = await pricingApi.get('/current');
       
       return {
         success: true,
@@ -15,11 +15,11 @@ export const PricingService = {
         headers: response.data.headers
       };
     } catch (error) {
-      console.error("Failed to fetch current pricing:", error);
+      console.error('Failed to fetch current pricing:', error);
       return {
         success: false,
         error: error.response?.data?.headers?.customerMessage || 
-              "Failed to fetch current pricing",
+              'Failed to fetch current pricing',
         status: error.response?.status
       };
     }
@@ -28,7 +28,7 @@ export const PricingService = {
   // Add new pricing
   addPricing: async (pricingData) => {
     try {
-      const response = await pricingApi.post("/", pricingData);
+      const response = await pricingApi.post('/', pricingData);
       
       return {
         success: true,
@@ -36,11 +36,11 @@ export const PricingService = {
         headers: response.data.headers
       };
     } catch (error) {
-      console.error("Failed to add pricing:", error);
+      console.error('Failed to add pricing:', error);
       return {
         success: false,
         error: error.response?.data?.headers?.customerMessage || 
-              "Failed to add pricing",
+              'Failed to add pricing',
         status: error.response?.status
       };
     }
@@ -57,7 +57,7 @@ export const PricingService = {
         headers: response.data.headers
       };
     } catch (error) {
-      console.error("Failed to update pricing:", error);
+      console.error('Failed to update pricing:', error);
       return {
         success: false,
         error: error.response?.data?.headers?.customerMessage || 

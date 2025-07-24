@@ -2,30 +2,30 @@ import React, { useState } from 'react';
 
 const tutorsData = [
   {
-    name: "Timothy Mwingirwa",
-    description: "Secondary school physics and mathematics teacher",
-    qualifications: "I am Timothy mwingirwa, a Kenyan based physics and mathematics teacher. I am a (BED SCIENCE) graduate from the university of Nairobi. I pride myself with a wide range of experience of teaching .I have taught in several schools including Chogoria girls secondary school. I am passionate about the overall success of my students both...",
-    subjects: ["Mathematics (844/CBC primary)", "Secondary School physics"],
-    location: "Meru County",
-    rate: "KSh 500–1,500/hour",
-    experience: "6.0 yr.",
-    imageUrl: "/path-to-timothy-image.jpg",
+    name: 'Timothy Mwingirwa',
+    description: 'Secondary school physics and mathematics teacher',
+    qualifications: 'I am Timothy mwingirwa, a Kenyan based physics and mathematics teacher. I am a (BED SCIENCE) graduate from the university of Nairobi. I pride myself with a wide range of experience of teaching .I have taught in several schools including Chogoria girls secondary school. I am passionate about the overall success of my students both...',
+    subjects: ['Mathematics (844/CBC primary)', 'Secondary School physics'],
+    location: 'Meru County',
+    rate: 'KSh 500–1,500/hour',
+    experience: '6.0 yr.',
+    imageUrl: '/path-to-timothy-image.jpg',
   },
   {
-    name: "Stephen",
-    description: "University lecturer",
-    qualifications: "I am a prolific teacher with both graduate and post graduate experience in teaching and lecturing. I am a result-oriented individual who is very patient and detailed when dealing with learners. My goal is aimed at getting perfection from learners as far as competence is concerned. I am resilient and jovial. My content delivery is learner...",
-    subjects: ["Kiswahili language", "English & Literature"],
-    location: "Machakos County",
-    rate: "KSh 2,500–4,000/hour",
-    experience: "30.0 yr.",
-    imageUrl: "/path-to-stephen-image.jpg",
+    name: 'Stephen',
+    description: 'University lecturer',
+    qualifications: 'I am a prolific teacher with both graduate and post graduate experience in teaching and lecturing. I am a result-oriented individual who is very patient and detailed when dealing with learners. My goal is aimed at getting perfection from learners as far as competence is concerned. I am resilient and jovial. My content delivery is learner...',
+    subjects: ['Kiswahili language', 'English & Literature'],
+    location: 'Machakos County',
+    rate: 'KSh 2,500–4,000/hour',
+    experience: '30.0 yr.',
+    imageUrl: '/path-to-stephen-image.jpg',
   },
 ];
 
 const Tutors = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [locationTerm, setLocationTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [locationTerm, setLocationTerm] = useState('');
 
   // Filter tutors based on search term and location
   const filteredTutors = tutorsData.filter((tutor) =>

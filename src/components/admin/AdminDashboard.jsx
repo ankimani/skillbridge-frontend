@@ -37,7 +37,7 @@ const AdminDashboard = () => {
           dailyRevenue: totals.dailyRevenue
         });
       } catch (error) {
-        console.error("Error loading dashboard data:", error);
+        console.error('Error loading dashboard data:', error);
       } finally {
         setLoading(false);
       }

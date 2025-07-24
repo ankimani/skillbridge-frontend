@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef  } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const EmailVerification = () => {
     const hasRun = useRef(false);
   const [searchParams] = useSearchParams();
@@ -14,7 +14,7 @@ const EmailVerification = () => {
     
     const verifyEmail = async () => {
       const token = searchParams.get('token');
-      console.log("token ",token);
+      console.log('token ',token);
       if (!token) {
         setMessage('Invalid verification link.');
         setStatus('error');
@@ -30,8 +30,8 @@ const EmailVerification = () => {
 
         const responseCode = data.headers?.responseCode;
         const customerMessage = data.headers?.customerMessage || 'Verification failed.';
-        console.log("responseCode ",responseCode);
-        console.log("customerMessage ",customerMessage);
+        console.log('responseCode ',responseCode);
+        console.log('customerMessage ',customerMessage);
         if (responseCode === 200) {
           setMessage(customerMessage);
           setStatus('success');

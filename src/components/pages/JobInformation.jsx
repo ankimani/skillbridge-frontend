@@ -344,7 +344,7 @@ const JobInformation = () => {
                     </div>
                     <div>
                       <h4 className="text-sm font-medium text-gray-500 mb-1">Gender Preference</h4>
-                      <p className="text-gray-800 font-medium">{job.genderPreference || "No preference"}</p>
+                      <p className="text-gray-800 font-medium">{job.genderPreference || 'No preference'}</p>
                     </div>
                   </div>
                   
@@ -364,7 +364,7 @@ const JobInformation = () => {
                     </div>
                     <div>
                       <h4 className="text-sm font-medium text-gray-500 mb-1">Location</h4>
-                      <p className="text-gray-800 font-medium">{job.location || "Not specified"}</p>
+                      <p className="text-gray-800 font-medium">{job.location || 'Not specified'}</p>
                     </div>
                   </div>
                   

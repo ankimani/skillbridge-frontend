@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from "react";
-import PhoneInput from "react-phone-input-2";
-import { useNavigate } from "react-router-dom";
-import "react-phone-input-2/lib/style.css";
+import React, { useState, useEffect } from 'react';
+import PhoneInput from 'react-phone-input-2';
+import { useNavigate } from 'react-router-dom';
+import 'react-phone-input-2/lib/style.css';
 import { FiArrowRight, FiCheck } from 'react-icons/fi';
 import { FiUser, FiBriefcase, FiPhone, FiCalendar, FiMapPin, FiMail } from 'react-icons/fi';
-import "./ProfileInfoForm.css";
-import { saveProfileDetails } from "../services/profileService";
-import Validation from "../services/Validation";
-import { fetchUserProfile } from "../services/authProfile";
+import './ProfileInfoForm.css';
+import { saveProfileDetails } from '../services/profileService';
+import Validation from '../services/Validation';
+import { fetchUserProfile } from '../services/authProfile';
 
 const ProfileInfoForm = () => {
   const [formData, setFormData] = useState({
     userId: null,
-    companyName: "",
-    role: "",
-    displayName: "",
-    gender: "",
-    birthdate: "",
-    location: "",
-    postalCode: "",
-    phoneNumber: "",
-    profileDescription: "",
-    imagePath: "",
-    isCompany: "individual",
+    companyName: '',
+    role: '',
+    displayName: '',
+    gender: '',
+    birthdate: '',
+    location: '',
+    postalCode: '',
+    phoneNumber: '',
+    profileDescription: '',
+    imagePath: '',
+    isCompany: 'individual',
   });
 
   const navigate = useNavigate();
@@ -34,8 +34,8 @@ const ProfileInfoForm = () => {
   useEffect(() => {
     const loadUserProfile = async () => {
       try {
-        const token = localStorage.getItem("authToken");
-        console.log("token ", token)
+        const token = localStorage.getItem('authToken');
+        console.log('token ', token);
         const profile = await fetchUserProfile(token);
         setFormData(prevData => ({
           ...prevData,
@@ -43,8 +43,8 @@ const ProfileInfoForm = () => {
         }));
       } catch (error) {
         setMessage({
-          type: "error",
-          text: "Failed to load user profile.",
+          type: 'error',
+          text: 'Failed to load user profile.',
         });
       }
     };
@@ -72,10 +72,10 @@ const ProfileInfoForm = () => {
     const { name, value } = e.target;
     setErrors(prevErrors => ({ ...prevErrors, [name]: undefined }));
     
-    if (name === "birthdate") {
-      const formattedDate = value.split("-").map((part, index) => {
-        return index === 1 || index === 2 ? part.padStart(2, "0") : part;
-      }).join("-");
+    if (name === 'birthdate') {
+      const formattedDate = value.split('-').map((part, index) => {
+        return index === 1 || index === 2 ? part.padStart(2, '0') : part;
+      }).join('-');
       setFormData({ ...formData, [name]: formattedDate });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -83,38 +83,38 @@ const ProfileInfoForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    console.log("submit called?....")
+    console.log('submit called?....');
     e.preventDefault();
     setIsSubmitting(true);
     setProgress(10);
-    console.log("progress set....")
+    console.log('progress set....');
     const validationErrors = Validation(formData);
     setErrors(validationErrors);
-    console.log("all fields okay ", Object.keys(validationErrors).length === 0)
+    console.log('all fields okay ', Object.keys(validationErrors).length === 0);
     
     if (Object.keys(validationErrors).length === 0) {
       try {
-        console.log("called save method")
+        console.log('called save method');
         const response = await saveProfileDetails(formData);
-        console.log("response ", response.data)
+        console.log('response ', response.data);
         setProgress(100); // Complete progress
         if (response.success) {
           setMessage({
-            type: "success",
-            text: "Profile details saved successfully",
+            type: 'success',
+            text: 'Profile details saved successfully',
           });
-          setTimeout(() => navigate("/education"), 2000);
+          setTimeout(() => navigate('/education'), 2000);
         } else {
           setMessage({
-            type: "error",
-            text: response.error || "Failed to save profile details",
+            type: 'error',
+            text: response.error || 'Failed to save profile details',
           });
         }
       } catch (error) {
         setProgress(0);
         setMessage({
-          type: "error",
-          text: "An error occurred while saving profile details",
+          type: 'error',
+          text: 'An error occurred while saving profile details',
         });
       } finally {
         setIsSubmitting(false);
@@ -136,9 +136,9 @@ const ProfileInfoForm = () => {
         <form onSubmit={handleSubmit} className="p-6 sm:p-8">
           {message && (
             <div className={`mb-6 p-4 rounded-lg ${
-              message.type === "error" 
-                ? "bg-red-50 text-red-700" 
-                : "bg-green-50 text-green-700"
+              message.type === 'error' 
+                ? 'bg-red-50 text-red-700' 
+                : 'bg-green-50 text-green-700'
             }`}>
               {message.text}
             </div>
@@ -167,7 +167,7 @@ const ProfileInfoForm = () => {
                   </div>
                 </div>
 
-                {formData.isCompany === "company" && (
+                {formData.isCompany === 'company' && (
                   <>
                     <div className="sm:col-span-3">
                       <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -304,8 +304,8 @@ const ProfileInfoForm = () => {
                         setFormData({ ...formData, phoneNumber: phone });
                       }}
                       inputProps={{
-                        name: "phoneNumber",
-                        id: "phoneNumber",
+                        name: 'phoneNumber',
+                        id: 'phoneNumber',
                         required: true,
                         className: `block w-full pl-12 py-2 rounded-md border ${
                           errors.phoneNumber ? 'border-red-300' : 'border-gray-300'

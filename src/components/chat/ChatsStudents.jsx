@@ -48,7 +48,7 @@ const ChatsStudents = () => {
         else if (date >= yesterday) {
           return `Yesterday, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
         } 
-        else {
+        
           return date.toLocaleDateString([], { 
             month: 'short', 
             day: 'numeric', 
@@ -56,7 +56,7 @@ const ChatsStudents = () => {
             hour: '2-digit',
             minute: '2-digit'
           });
-        }
+        
       }
       return 'Just now';
     } catch {

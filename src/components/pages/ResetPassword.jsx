@@ -5,7 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const ResetPassword = () => {
-  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
   const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1/users/reset-password`;
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -200,7 +200,7 @@ const ResetPassword = () => {
                 <FaLock className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
                 value={formData.password}
@@ -253,7 +253,7 @@ const ResetPassword = () => {
                 <FaLock className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 id="confirmPassword"
                 name="confirmPassword"
                 value={formData.confirmPassword}

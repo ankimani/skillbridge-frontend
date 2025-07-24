@@ -2,15 +2,15 @@ import React from 'react';
 
 const Footer = () => {
   const itemsColumn1 = [
-    "About Us", "Contact Us", "Terms of Service", "Privacy Policy"
+    'About Us', 'Contact Us', 'Terms of Service', 'Privacy Policy'
   ];
 
   const itemsColumn2 = [
-    "Subjects", "Skills", "Teachers", "Teaching Jobs"
+    'Subjects', 'Skills', 'Teachers', 'Teaching Jobs'
   ];
 
   const itemsColumn3 = [
-    "Blog", "FAQ", "Testimonials", "Resources"
+    'Blog', 'FAQ', 'Testimonials', 'Resources'
   ];
 
   return (

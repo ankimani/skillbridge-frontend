@@ -19,7 +19,7 @@ export const logoutUser = () => {
         }
       };
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error('Logout failed:', error);
       // Return error object matching your API error format
       return {
         success: false,

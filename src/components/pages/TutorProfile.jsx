@@ -8,7 +8,7 @@ const TutorProfile = ({ teacherId }) => {
   const [tutorData, setTutorData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 
   useEffect(() => {
     const fetchTutorData = async () => {

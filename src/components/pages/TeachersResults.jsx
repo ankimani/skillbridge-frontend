@@ -13,87 +13,87 @@ const TeachersResults = () => {
   const teachers = [
     {
       id: 1,
-      name: "Sarah Johnson",
-      title: "Senior Software Engineer",
-      skills: ["JavaScript", "React", "Node.js", "TypeScript"],
-      description: "Experienced full-stack developer with 8+ years in the industry. Specializes in modern JavaScript frameworks and loves teaching programming concepts in an accessible way.",
-      location: "San Francisco, USA",
-      rate: "$70-120/hour",
+      name: 'Sarah Johnson',
+      title: 'Senior Software Engineer',
+      skills: ['JavaScript', 'React', 'Node.js', 'TypeScript'],
+      description: 'Experienced full-stack developer with 8+ years in the industry. Specializes in modern JavaScript frameworks and loves teaching programming concepts in an accessible way.',
+      location: 'San Francisco, USA',
+      rate: '$70-120/hour',
       yearsOnline: 4,
       totalExperience: 8,
-      availability: "Online",
-      category: "IT & Software",
-      image: "https://randomuser.me/api/portraits/women/44.jpg"
+      availability: 'Online',
+      category: 'IT & Software',
+      image: 'https://randomuser.me/api/portraits/women/44.jpg'
     },
     {
       id: 2,
-      name: "Michael Chen",
-      title: "Finance Professor",
-      skills: ["Investment", "Corporate Finance", "Risk Management", "Accounting"],
-      description: "PhD in Finance with 15 years of teaching experience at university level. Provides practical insights into financial markets and investment strategies.",
-      location: "New York, USA",
-      rate: "$90-150/hour",
+      name: 'Michael Chen',
+      title: 'Finance Professor',
+      skills: ['Investment', 'Corporate Finance', 'Risk Management', 'Accounting'],
+      description: 'PhD in Finance with 15 years of teaching experience at university level. Provides practical insights into financial markets and investment strategies.',
+      location: 'New York, USA',
+      rate: '$90-150/hour',
       yearsOnline: 2,
       totalExperience: 15,
-      availability: "Physical",
-      category: "Banking & Finance",
-      image: "https://randomuser.me/api/portraits/men/32.jpg"
+      availability: 'Physical',
+      category: 'Banking & Finance',
+      image: 'https://randomuser.me/api/portraits/men/32.jpg'
     },
     {
       id: 3,
-      name: "Emma Rodriguez",
-      title: "Machine Learning Specialist",
-      skills: ["Python", "TensorFlow", "Data Science", "AI"],
-      description: "Passionate about making AI accessible to everyone. Worked at leading tech companies before transitioning to teaching full-time.",
-      location: "Austin, USA",
-      rate: "$80-130/hour",
+      name: 'Emma Rodriguez',
+      title: 'Machine Learning Specialist',
+      skills: ['Python', 'TensorFlow', 'Data Science', 'AI'],
+      description: 'Passionate about making AI accessible to everyone. Worked at leading tech companies before transitioning to teaching full-time.',
+      location: 'Austin, USA',
+      rate: '$80-130/hour',
       yearsOnline: 3,
       totalExperience: 6,
-      availability: "Online",
-      category: "IT & Software",
-      image: "https://randomuser.me/api/portraits/women/63.jpg"
+      availability: 'Online',
+      category: 'IT & Software',
+      image: 'https://randomuser.me/api/portraits/women/63.jpg'
     },
     {
       id: 4,
-      name: "David Wilson",
-      title: "Business Consultant",
-      skills: ["Marketing", "Strategy", "Entrepreneurship", "Management"],
-      description: "Helped launch dozens of successful startups. Focuses on practical business skills that students can apply immediately.",
-      location: "Chicago, USA",
-      rate: "$100-180/hour",
+      name: 'David Wilson',
+      title: 'Business Consultant',
+      skills: ['Marketing', 'Strategy', 'Entrepreneurship', 'Management'],
+      description: 'Helped launch dozens of successful startups. Focuses on practical business skills that students can apply immediately.',
+      location: 'Chicago, USA',
+      rate: '$100-180/hour',
       yearsOnline: 1,
       totalExperience: 12,
-      availability: "Physical",
-      category: "Business",
-      image: "https://randomuser.me/api/portraits/men/75.jpg"
+      availability: 'Physical',
+      category: 'Business',
+      image: 'https://randomuser.me/api/portraits/men/75.jpg'
     },
     {
       id: 5,
-      name: "Priya Patel",
-      title: "Electrical Engineer",
-      skills: ["Circuit Design", "Embedded Systems", "IoT", "Robotics"],
-      description: "Industry professional with a passion for teaching engineering concepts through hands-on projects and real-world applications.",
-      location: "Boston, USA",
-      rate: "$75-125/hour",
+      name: 'Priya Patel',
+      title: 'Electrical Engineer',
+      skills: ['Circuit Design', 'Embedded Systems', 'IoT', 'Robotics'],
+      description: 'Industry professional with a passion for teaching engineering concepts through hands-on projects and real-world applications.',
+      location: 'Boston, USA',
+      rate: '$75-125/hour',
       yearsOnline: 2,
       totalExperience: 7,
-      availability: "Online",
-      category: "Engineering",
-      image: "https://randomuser.me/api/portraits/women/25.jpg"
+      availability: 'Online',
+      category: 'Engineering',
+      image: 'https://randomuser.me/api/portraits/women/25.jpg'
     },
     {
       id: 6,
-      name: "James Taylor",
-      title: "Mathematics Professor",
-      skills: ["Calculus", "Linear Algebra", "Statistics", "Discrete Math"],
-      description: "Makes complex mathematical concepts approachable and fun. Believes anyone can learn math with the right guidance.",
-      location: "Seattle, USA",
-      rate: "$60-110/hour",
+      name: 'James Taylor',
+      title: 'Mathematics Professor',
+      skills: ['Calculus', 'Linear Algebra', 'Statistics', 'Discrete Math'],
+      description: 'Makes complex mathematical concepts approachable and fun. Believes anyone can learn math with the right guidance.',
+      location: 'Seattle, USA',
+      rate: '$60-110/hour',
       yearsOnline: 5,
       totalExperience: 10,
-      availability: "Online",
-      category: "Education",
-      image: "https://randomuser.me/api/portraits/men/81.jpg"
+      availability: 'Online',
+      category: 'Education',
+      image: 'https://randomuser.me/api/portraits/men/81.jpg'
     }
   ];
 
@@ -112,12 +112,12 @@ const TeachersResults = () => {
   });
 
   const categories = [
-    "All",
-    "IT & Software",
-    "Business",
-    "Education",
-    "Engineering",
-    "Banking & Finance"
+    'All',
+    'IT & Software',
+    'Business',
+    'Education',
+    'Engineering',
+    'Banking & Finance'
   ];
 
   return (

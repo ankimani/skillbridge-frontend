@@ -1,9 +1,9 @@
 // src/services/userService.js
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1/users`;
 
 export const registerUser = async (userData) => {
-  console.log('backend',process.env.BACKEND_BASE_URL)
+  console.log('backend',process.env.BACKEND_BASE_URL);
   try {
     const response = await fetch(`${API_BASE_URL}/register`, {
       method: 'POST',

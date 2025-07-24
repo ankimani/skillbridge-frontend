@@ -45,7 +45,11 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "lint": "eslint src --ext .js,.jsx --fix",
+        "lint:check": "eslint src --ext .js,.jsx",
+        "format": "prettier --write src/**/*.{js,jsx,css,md}",
+        "format:check": "prettier --check src/**/*.{js,jsx,css,md}"
       },
       
     "eslintConfig": {
@@ -67,8 +71,15 @@
         ]
     },
     "devDependencies": {
+        "@babel/eslint-parser": "^7.24.0",
+        "@babel/preset-react": "^7.24.0",
         "autoprefixer": "^10.4.19",
+        "eslint": "^8.57.0",
+        "eslint-plugin-jsx-a11y": "^6.8.0",
+        "eslint-plugin-react": "^7.34.0",
+        "eslint-plugin-react-hooks": "^4.6.0",
         "postcss": "^8.4.38",
+        "prettier": "^3.2.5",
         "serve": "^14.2.4",
         "tailwindcss": "^3.4.3"
     }

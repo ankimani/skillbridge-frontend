@@ -1,5 +1,5 @@
-import axios from "axios";
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+import axios from 'axios';
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1`;
 
 // Buy coins endpoint
@@ -19,11 +19,11 @@ export const buyCoins = async (userId, payload, token) => {
         }
       }
     );
-    console.log("response ",response)
-    console.log("response data ",response.data)
+    console.log('response ',response);
+    console.log('response data ',response.data);
     return response.data;
   } catch (error) {
-    console.error("Failed to buy coins:", error);
+    console.error('Failed to buy coins:', error);
     throw error;
   }
 };
@@ -50,7 +50,7 @@ export const buyCoinMpesa = async (userId, phoneNumber, amount, coins, token) =>
     );
     return response.data;
   } catch (error) {
-    console.error("Failed to initiate M-Pesa payment:", error);
+    console.error('Failed to initiate M-Pesa payment:', error);
     throw error;
   }
 };
@@ -68,7 +68,7 @@ export const getCoinBalance = async (userId, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to fetch coin balance:", error);
+    console.error('Failed to fetch coin balance:', error);
     throw error;
   }
 };
@@ -86,7 +86,7 @@ export const calculateCoinPrice = async (coins, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to calculate coin price:", error);
+    console.error('Failed to calculate coin price:', error);
     throw error;
   }
 };
@@ -104,7 +104,7 @@ export const getTransactions = async (userId, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to fetch transactions:", error);
+    console.error('Failed to fetch transactions:', error);
     throw error;
   }
 };
@@ -125,7 +125,7 @@ export const getBillingInfo = async (userId, token) => {
     return {
       headers: {
         responseCode: 200,
-        customerMessage: "Billing address retrieved successfully"
+        customerMessage: 'Billing address retrieved successfully'
       },
       body: {
         data: response.data // This contains your actual billing info
@@ -137,14 +137,14 @@ export const getBillingInfo = async (userId, token) => {
       return {
         headers: {
           responseCode: 404,
-          customerMessage: "No billing address found"
+          customerMessage: 'No billing address found'
         },
         body: {
           data: null
         }
       };
     }
-    console.error("Failed to fetch billing info:", error);
+    console.error('Failed to fetch billing info:', error);
     throw error;
   }
 };
@@ -164,7 +164,7 @@ export const saveBillingInfo = async (userId, billingData, token) => {
     );
     return response.data?.body?.data;
   } catch (error) {
-    console.error("Failed to save billing info:", error);
+    console.error('Failed to save billing info:', error);
     throw error;
   }
 };

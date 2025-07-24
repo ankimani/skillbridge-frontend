@@ -1,10 +1,10 @@
-import createApiInstance from "./apiInterceptor";
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+import createApiInstance from './apiInterceptor';
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const BASE_URL = `${BACKEND_BASE_URL}/api/v1/student-profiles`;
 const teacherApis = createApiInstance(BASE_URL);
 
 export const saveStudentProfile = async (profileData) => {
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem('authToken');
   try {
     const response = await fetch(`${BASE_URL}`, {
       method: 'POST',
@@ -15,19 +15,19 @@ export const saveStudentProfile = async (profileData) => {
       body: JSON.stringify(profileData),
     });
     const data = await response.json();
-    console.log("data", data);
+    console.log('data', data);
     if (response.ok && data.headers.responseCode === 200) {
       return { success: true, data: data.body.data };
-    } else {
+    } 
       return { success: false, error: data.headers.customerMessage || 'Failed to save student profile' };
-    }
+    
   } catch (error) {
     return { success: false, error: error.message };
   }
 };
 
 export const getStudentProfileByUserId = async (userId) => {
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem('authToken');
   try {
     const response = await fetch(`${BASE_URL}/user/${userId}`, {
       method: 'GET',
@@ -36,19 +36,19 @@ export const getStudentProfileByUserId = async (userId) => {
       }
     });
     const data = await response.json();
-    console.log("data", data);
+    console.log('data', data);
     if (response.ok && data.headers.responseCode === 200) {
       return { success: true, data: data.body.data };
-    } else {
+    } 
       return { success: false, error: data.headers.customerMessage || 'Failed to get student profile' };
-    }
+    
   } catch (error) {
     return { success: false, error: error.message };
   }
 };
 
 export const updateStudentProfile = async (studentId, profileData) => {
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem('authToken');
   try {
     const response = await fetch(`${BASE_URL}/${studentId}`, {
       method: 'PUT',
@@ -59,19 +59,19 @@ export const updateStudentProfile = async (studentId, profileData) => {
       body: JSON.stringify(profileData),
     });
     const data = await response.json();
-    console.log("data", data);
+    console.log('data', data);
     if (response.ok && data.headers.responseCode === 200) {
       return { success: true, data: data.body.data };
-    } else {
+    } 
       return { success: false, error: data.headers.customerMessage || 'Failed to update student profile' };
-    }
+    
   } catch (error) {
     return { success: false, error: error.message };
   }
 };
 
 export const uploadStudentProfileImage = async (file) => {
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem('authToken');
   try {
     const formData = new FormData();
     formData.append('file', file);
@@ -84,12 +84,12 @@ export const uploadStudentProfileImage = async (file) => {
       body: formData
     });
     const data = await response.json();
-    console.log("data", data);
+    console.log('data', data);
     if (response.ok && data.headers.responseCode === 200) {
       return { success: true, data: data.body.data };
-    } else {
+    } 
       return { success: false, error: data.headers.customerMessage || 'Failed to upload profile image' };
-    }
+    
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -123,12 +123,12 @@ export const getAllStudentProfiles = async (page = 1, pageSize = 5, searchTerm =
         success: true, 
         body: data.body
       };
-    } else {
+    } 
       return { 
         success: false, 
         error: data.headers.customerMessage || 'Failed to get student profiles' 
       };
-    }
+    
   } catch (error) {
     return { success: false, error: error.message };
   }

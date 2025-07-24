@@ -33,12 +33,12 @@ const JobDisplay = () => {
   const navigate = useNavigate();
 
   const tutorRoutes = {
-    PROFILE: "/profileform",
-    EDUCATION: "/education",
-    EXPERIENCE: "/experience",
-    SUBJECTS: "/subjects",
-    DETAILS: "/details",
-    COMPLETE: "/jobs"
+    PROFILE: '/profileform',
+    EDUCATION: '/education',
+    EXPERIENCE: '/experience',
+    SUBJECTS: '/subjects',
+    DETAILS: '/details',
+    COMPLETE: '/jobs'
   };
 
   useEffect(() => {
@@ -70,8 +70,8 @@ const JobDisplay = () => {
           setLoading(true);
           setError(null);
         }
-        const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
-        let url = `${BACKEND_BASE_URL}/api/v1/jobs`;
+        const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
+        const url = `${BACKEND_BASE_URL}/api/v1/jobs`;
         const queryParams = new URLSearchParams({
           page: currentPage,
           size: pageSize,
@@ -277,7 +277,7 @@ const JobDisplay = () => {
                       {countsLoading[job.jobId] ? (
                         <span className="animate-pulse">Loading...</span>
                       ) : applicantCounts[job.jobId] === 0 ? (
-                        "Be the first one to apply"
+                        'Be the first one to apply'
                       ) : (
                         `${applicantCounts[job.jobId]} ${applicantCounts[job.jobId] === 1 ? 'person has' : 'people have'} applied`
                       )}

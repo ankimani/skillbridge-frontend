@@ -2,21 +2,21 @@ import React from 'react';
 
 const TopSkills = () => {
   const skills = [
-    "Academic Writing", "Accountancy", "Adobe Photoshop", "Algorithm & Data Structures",
-    "Analog Electronics", "Art and Craft", "AutoCAD", "Basic Electronics",
-    "BioChemistry", "Biology", "Biotechnology", "Business Management",
-    "C/C++", "C#", "Chemistry", "Civil Engineering",
-    "Commerce", "Communication Skills", "Company Law", "Computer networking",
-    "Computer Science", "Control Systems", "DBMS", "Digital Electronics",
-    ".net", "Economics", "Electrical Engineering", "Engineering Mechanics",
-    "English", "Environmental Science", "Financial Management", "Fluid Mechanics",
-    "French", "Geography", "German", "History",
-    "HTML", "IELTS", "Income Tax", "JAVA",
-    "Jquery and JavaScript", "Law", "Maths", "Mechanical",
-    "Microbiology", "Music", "PHP", "Physics",
-    "Political Science", "Programming", "Psychology", "Python",
-    "Science", "Selenium Webdriver", "Sociology", "Statistics",
-    "Strength of Materials", "Thermodynamics", "Zoology"
+    'Academic Writing', 'Accountancy', 'Adobe Photoshop', 'Algorithm & Data Structures',
+    'Analog Electronics', 'Art and Craft', 'AutoCAD', 'Basic Electronics',
+    'BioChemistry', 'Biology', 'Biotechnology', 'Business Management',
+    'C/C++', 'C#', 'Chemistry', 'Civil Engineering',
+    'Commerce', 'Communication Skills', 'Company Law', 'Computer networking',
+    'Computer Science', 'Control Systems', 'DBMS', 'Digital Electronics',
+    '.net', 'Economics', 'Electrical Engineering', 'Engineering Mechanics',
+    'English', 'Environmental Science', 'Financial Management', 'Fluid Mechanics',
+    'French', 'Geography', 'German', 'History',
+    'HTML', 'IELTS', 'Income Tax', 'JAVA',
+    'Jquery and JavaScript', 'Law', 'Maths', 'Mechanical',
+    'Microbiology', 'Music', 'PHP', 'Physics',
+    'Political Science', 'Programming', 'Psychology', 'Python',
+    'Science', 'Selenium Webdriver', 'Sociology', 'Statistics',
+    'Strength of Materials', 'Thermodynamics', 'Zoology'
   ];
 
   const columns = [];

@@ -28,7 +28,7 @@ const StudentBioData = () => {
     
     useEffect(() => {
         const loadUserProfile = async () => {
-            const token = localStorage.getItem("authToken");
+            const token = localStorage.getItem('authToken');
             if (token) {
                 try {
                     const profile = await fetchUserProfile(token);
@@ -38,8 +38,8 @@ const StudentBioData = () => {
                     }));
                 } catch (error) {
                     setMessage({
-                        type: "error",
-                        text: "Failed to load user information. Please refresh the page."
+                        type: 'error',
+                        text: 'Failed to load user information. Please refresh the page.'
                     });
                 }
             }
@@ -87,8 +87,8 @@ const StudentBioData = () => {
         
         if (!formData.userId) {
             setMessage({
-                type: "error",
-                text: "User information not loaded. Please wait or refresh the page."
+                type: 'error',
+                text: 'User information not loaded. Please wait or refresh the page.'
             });
             return;
         }
@@ -106,15 +106,15 @@ const StudentBioData = () => {
                     setShowSuccessModal(true);
                 } else {
                     setMessage({
-                        type: "error",
-                        text: result.error || "Failed to save profile"
+                        type: 'error',
+                        text: result.error || 'Failed to save profile'
                     });
                 }
             } catch (error) {
                 setProgress(0);
                 setMessage({
-                    type: "error",
-                    text: error.message || "An error occurred"
+                    type: 'error',
+                    text: error.message || 'An error occurred'
                 });
             } finally {
                 setIsSubmitting(false);
@@ -198,9 +198,9 @@ const StudentBioData = () => {
 
                     {message && (
                         <div className={`mb-6 p-4 rounded-lg ${
-                            message.type === "error" 
-                                ? "bg-red-50 text-red-700" 
-                                : "bg-green-50 text-green-700"
+                            message.type === 'error' 
+                                ? 'bg-red-50 text-red-700' 
+                                : 'bg-green-50 text-green-700'
                         }`}>
                             {message.text}
                         </div>
@@ -330,8 +330,8 @@ const StudentBioData = () => {
                                             setFormData({ ...formData, phoneNumber: phone });
                                         }}
                                         inputProps={{
-                                            name: "phoneNumber",
-                                            id: "phoneNumber",
+                                            name: 'phoneNumber',
+                                            id: 'phoneNumber',
                                             className: `block w-full pl-12 py-2 rounded-md border ${
                                                 errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
                                             } shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm`,

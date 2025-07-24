@@ -1,5 +1,5 @@
 import createApiInstance from './apiInterceptor';
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1`;
 const userApis = createApiInstance(`${API_BASE_URL}/users`);
 const roleApis = createApiInstance(`${API_BASE_URL}/roles`);
@@ -7,7 +7,7 @@ const roleApis = createApiInstance(`${API_BASE_URL}/roles`);
 // User-related APIs
 export const fetchAllUsers = async () => {
   try {
-    const response = await userApis.get(`/all`);
+    const response = await userApis.get('/all');
     return response.data;
   } catch (error) {
     console.error('Error fetching all users:', error);
@@ -32,7 +32,7 @@ export const fetchFilteredUsers = async (filters = {}) => {
       size: 10,
       ...filters
     };
-    const response = await userApis.get(`/filter`, { params });
+    const response = await userApis.get('/filter', { params });
     return response.data;
   } catch (error) {
     console.error('Error fetching filtered users:', error);
@@ -47,7 +47,7 @@ export const allUsersPaginated = async (page = 1, size = 10, filters = {}) => {
       size,
       ...filters
     };
-    const response = await userApis.get(`/filter`, { params });
+    const response = await userApis.get('/filter', { params });
     
     if (response.data && response.data.body && response.data.body.data) {
       return {

@@ -3,29 +3,29 @@ import React, { useState } from 'react';
 const messagesData = [
   {
     id: 1,
-    name: "Nibedita Dan",
-    date: "Sep 10",
-    content: "Hi, I am interested to teach Java. You can visit my profile.",
+    name: 'Nibedita Dan',
+    date: 'Sep 10',
+    content: 'Hi, I am interested to teach Java. You can visit my profile.',
     read: false,
   },
   {
     id: 2,
-    name: "Chinmay Patel",
-    date: "Sep 9",
-    content: "I am having 15+ years exp as a java developer and trainer, I provide 1 to 1 training in Java through zoom. Pls check my website www.javatutoronline.com You can contact me at +919853166385",
+    name: 'Chinmay Patel',
+    date: 'Sep 9',
+    content: 'I am having 15+ years exp as a java developer and trainer, I provide 1 to 1 training in Java through zoom. Pls check my website www.javatutoronline.com You can contact me at +919853166385',
     read: false,
   },
   {
     id: 3,
-    name: "Bhuvana",
-    date: "Sep 9",
-    content: "Hello Sarah. I am an experienced Java developer and trainer for the past 10 years. I can help you learn with Java basics and other Java concepts. I will deliver to the best of my knowledge. Will be glad to assist you in learning Java basics.",
+    name: 'Bhuvana',
+    date: 'Sep 9',
+    content: 'Hello Sarah. I am an experienced Java developer and trainer for the past 10 years. I can help you learn with Java basics and other Java concepts. I will deliver to the best of my knowledge. Will be glad to assist you in learning Java basics.',
     read: false,
   },
 ];
 
 const Messages = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Filter messages based on search term
   const filteredMessages = messagesData.filter((message) =>

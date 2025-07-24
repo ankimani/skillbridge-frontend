@@ -1,5 +1,5 @@
 // Add this to your services/teacherProfile.js file (or create it if it doesn't exist)
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 export const fetchTeachingDetails = async (userId, token) => {
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/teaching/details/teacher/${userId}`, {
       headers: {
@@ -20,7 +20,7 @@ export const fetchTeachingDetails = async (userId, token) => {
   };
 
   export const updateTeachingDetails = async (id, userId, teachingDetail, token) => {
-    console.log("teachingDetail",teachingDetail)
+    console.log('teachingDetail',teachingDetail);
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/teaching/details/${id}?userId=${userId}`, {
       method: 'PUT',
       headers: {
@@ -31,7 +31,7 @@ export const fetchTeachingDetails = async (userId, token) => {
         rate: teachingDetail.rate,
         maxFee: Number(teachingDetail.maxFee),
         minFee: Number(teachingDetail.minFee),
-        paymentDetails: teachingDetail.paymentDetails || "",
+        paymentDetails: teachingDetail.paymentDetails || '',
         totalExpYears: Number(teachingDetail.totalExpYears),
         onlineExpYears: Number(teachingDetail.onlineExpYears),
         travelWillingness: Boolean(teachingDetail.travelWillingness),
@@ -40,17 +40,17 @@ export const fetchTeachingDetails = async (userId, token) => {
         homeAvailability: Boolean(teachingDetail.homeAvailability),
         homeworkHelp: Boolean(teachingDetail.homeworkHelp),
         currentlyEmployed: Boolean(teachingDetail.currentlyEmployed),
-        workPreference: teachingDetail.workPreference || "",
+        workPreference: teachingDetail.workPreference || '',
     
       })
     });
-  console.log("response ",response)
+  console.log('response ',response);
     if (!response.ok) {
       throw new Error('Failed to update teaching details');
     }
     
     const data = await response.json();
-    console.log("data ",data)
+    console.log('data ',data);
   
     return data.body.data;
   };

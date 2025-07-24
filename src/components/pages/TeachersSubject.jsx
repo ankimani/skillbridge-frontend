@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { FiArrowRight, FiArrowLeft, FiCheck } from 'react-icons/fi';
-import ValidateSubject from "../services/ValidateSubject";
-import { saveSubjectDetails } from "../services/subjectService";
-import { fetchUserProfile } from "../services/authProfile";
-import { getTeacherDetailsByUserId } from "../services/displayTeacherId";
-import { useNavigate } from "react-router-dom";
+import ValidateSubject from '../services/ValidateSubject';
+import { saveSubjectDetails } from '../services/subjectService';
+import { fetchUserProfile } from '../services/authProfile';
+import { getTeacherDetailsByUserId } from '../services/displayTeacherId';
+import { useNavigate } from 'react-router-dom';
 
 const TeachersSubject = () => {
   const [formData, setFormData] = useState({
@@ -20,13 +20,13 @@ const TeachersSubject = () => {
   const [progress, setProgress] = useState(0);
   const [savedSubjects, setSavedSubjects] = useState([]);
   const navigate = useNavigate();
-  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || "http://localhost:8089";
+  const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
 
   // Load user profile and teacher ID
   useEffect(() => {
     const loadUserProfileAndTeacherId = async () => {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem('authToken');
         const profile = await fetchUserProfile(token);
         const userId = profile.userId;
 
@@ -44,14 +44,14 @@ const TeachersSubject = () => {
           }));
         } else {
           setMessage({
-            type: "error",
-            text: teacherResponse.error || "Failed to load teacher details.",
+            type: 'error',
+            text: teacherResponse.error || 'Failed to load teacher details.',
           });
         }
       } catch (error) {
         setMessage({
-          type: "error",
-          text: "Failed to load user profile or teacher details.",
+          type: 'error',
+          text: 'Failed to load user profile or teacher details.',
         });
       }
     };
@@ -71,10 +71,10 @@ const TeachersSubject = () => {
         }));
         setSubjectOptions(options);
       } catch (error) {
-        console.error("Error fetching subjects:", error);
+        console.error('Error fetching subjects:', error);
         setMessage({
-          type: "error",
-          text: "Failed to load subject options. Please try again later.",
+          type: 'error',
+          text: 'Failed to load subject options. Please try again later.',
         });
       }
     };
@@ -112,14 +112,14 @@ const TeachersSubject = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("handling skill")
+    console.log('handling skill');
     setIsSubmitting(true);
     setProgress(10); // Start progress
     
     const validationErrors = ValidateSubject({ selectedSubject: formData.selectedSubject });
     setErrors(validationErrors);
     console.log(validationErrors);
-    console.log("skils okay? ",Object.keys(validationErrors).length > 0)
+    console.log('skils okay? ',Object.keys(validationErrors).length > 0);
     if (Object.keys(validationErrors).length > 0) {
       setProgress(0);
       setIsSubmitting(false);
@@ -127,29 +127,29 @@ const TeachersSubject = () => {
     }
 
     try {
-      console.log("about to call save")
+      console.log('about to call save');
       const response = await saveSubjectDetails({
         teacherId: formData.teacherId,
         userId: formData.userId,
         subjectId: formData.selectedSubject.value,
       });
-      console.log("response ",response)
+      console.log('response ',response);
 
       if (!response.success) {
-        if (response.error?.includes("The number of subjects cannot exceed")) {
-          setMessage({ type: "error", text: response.error });
+        if (response.error?.includes('The number of subjects cannot exceed')) {
+          setMessage({ type: 'error', text: response.error });
           setTimeout(() => {
-            navigate("/details");
+            navigate('/details');
           }, 3000);
         } else {
           setMessage({
-            type: "error",
-            text: response.error || "Failed to save subject details",
+            type: 'error',
+            text: response.error || 'Failed to save subject details',
           });
         }
       } else {
         setMessage({
-          type: "success",
+          type: 'success',
           text: `${formData.selectedSubject.label} saved successfully`,
         });
         setSavedSubjects([...savedSubjects, formData.selectedSubject]);
@@ -159,10 +159,10 @@ const TeachersSubject = () => {
         }));
       }
     } catch (error) {
-      console.error("Error saving subject details:", error);
+      console.error('Error saving subject details:', error);
       setMessage({
-        type: "error",
-        text: "An error occurred while saving subject",
+        type: 'error',
+        text: 'An error occurred while saving subject',
       });
     } finally {
       setProgress(100);
@@ -200,9 +200,9 @@ const TeachersSubject = () => {
             {message && (
               <div
                 className={`mb-6 p-4 rounded-md ${
-                  message.type === "error" 
-                    ? "bg-red-50 text-red-700 border border-red-200" 
-                    : "bg-green-50 text-green-700 border border-green-200"
+                  message.type === 'error' 
+                    ? 'bg-red-50 text-red-700 border border-red-200' 
+                    : 'bg-green-50 text-green-700 border border-green-200'
                 }`}
               >
                 {message.text}
@@ -225,7 +225,7 @@ const TeachersSubject = () => {
                 className="basic-single-select"
                 classNamePrefix="select"
                 styles={customStyles}
-                noOptionsMessage={() => "No subjects found"}
+                noOptionsMessage={() => 'No subjects found'}
                 isClearable
               />
               {errors.selectedSubject && (

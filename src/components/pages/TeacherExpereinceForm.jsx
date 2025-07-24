@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi';
-import ValidateExperience from "../services/ValidateExperience";
-import { saveExperienceDetails } from "../services/experienceService";
-import { useNavigate } from "react-router-dom";
-import { fetchUserProfile } from "../services/authProfile";
-import { getTeacherDetailsByUserId } from "../services/displayTeacherId";
+import ValidateExperience from '../services/ValidateExperience';
+import { saveExperienceDetails } from '../services/experienceService';
+import { useNavigate } from 'react-router-dom';
+import { fetchUserProfile } from '../services/authProfile';
+import { getTeacherDetailsByUserId } from '../services/displayTeacherId';
 
 const TeacherExperienceForm = () => {
   const [formData, setFormData] = useState({
@@ -28,7 +28,7 @@ const TeacherExperienceForm = () => {
   useEffect(() => {
     const loadUserProfileAndTeacherId = async () => {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem('authToken');
         const profile = await fetchUserProfile(token);
         const userId = profile.userId;
 
@@ -46,14 +46,14 @@ const TeacherExperienceForm = () => {
           }));
         } else {
           setMessage({
-            type: "error",
-            text: teacherResponse.error || "Failed to load teacher details.",
+            type: 'error',
+            text: teacherResponse.error || 'Failed to load teacher details.',
           });
         }
       } catch (error) {
         setMessage({
-          type: "error",
-          text: "Failed to load user profile or teacher details.",
+          type: 'error',
+          text: 'Failed to load user profile or teacher details.',
         });
       }
     };
@@ -109,24 +109,24 @@ const TeacherExperienceForm = () => {
 
         if (response.success) {
           setMessage({
-            type: "success",
-            text: "Experience details saved successfully",
+            type: 'success',
+            text: 'Experience details saved successfully',
           });
           setTimeout(() => {
-            navigate("/subjects");
+            navigate('/subjects');
           }, 2000);
         } else {
           setMessage({
-            type: "error",
-            text: response.error || "Failed to save experience details",
+            type: 'error',
+            text: response.error || 'Failed to save experience details',
           });
         }
       } catch (error) {
-        console.error("Error saving experience details:", error);
+        console.error('Error saving experience details:', error);
         setProgress(0);
         setMessage({
-          type: "error",
-          text: "An error occurred while saving experience details",
+          type: 'error',
+          text: 'An error occurred while saving experience details',
         });
       } finally {
         setIsSubmitting(false);
@@ -150,9 +150,9 @@ const TeacherExperienceForm = () => {
             {message && (
               <div
                 className={`mb-6 p-4 rounded-md ${
-                  message.type === "error" 
-                    ? "bg-red-50 text-red-700 border border-red-200" 
-                    : "bg-green-50 text-green-700 border border-green-200"
+                  message.type === 'error' 
+                    ? 'bg-red-50 text-red-700 border border-red-200' 
+                    : 'bg-green-50 text-green-700 border border-green-200'
                 }`}
               >
                 {message.text}
@@ -174,8 +174,8 @@ const TeacherExperienceForm = () => {
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
                       errors.organizationName 
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm`}
                     placeholder="e.g. Microsoft Corporation"
                   />
@@ -196,8 +196,8 @@ const TeacherExperienceForm = () => {
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
                       errors.designation 
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm`}
                     placeholder="e.g. Senior Software Engineer"
                   />
@@ -219,8 +219,8 @@ const TeacherExperienceForm = () => {
                       onChange={handleChange}
                       className={`block w-full px-4 py-2 rounded-md border ${
                         errors.startDate 
-                          ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                       } shadow-sm sm:text-sm`}
                     />
                     {errors.startDate && (
@@ -240,10 +240,10 @@ const TeacherExperienceForm = () => {
                       disabled={formData.currentJob}
                       className={`block w-full px-4 py-2 rounded-md border ${
                         errors.endDate 
-                          ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
+                          ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                           : formData.currentJob 
-                            ? "border-gray-200 bg-gray-100" 
-                            : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                            ? 'border-gray-200 bg-gray-100' 
+                            : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                       } shadow-sm sm:text-sm`}
                     />
                     {errors.endDate && (
@@ -266,8 +266,8 @@ const TeacherExperienceForm = () => {
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
                       errors.association 
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm bg-white`}
                   >
                     <option value="">Select employment type</option>
@@ -293,8 +293,8 @@ const TeacherExperienceForm = () => {
                     rows="4"
                     className={`block w-full px-4 py-2 rounded-md border ${
                       errors.jobDescription 
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                     } shadow-sm sm:text-sm`}
                     placeholder="Describe your responsibilities and achievements..."
                   />

@@ -1,5 +1,5 @@
-import React from "react";
-import { FiCheckCircle, FiMail } from "react-icons/fi";
+import React from 'react';
+import { FiCheckCircle, FiMail } from 'react-icons/fi';
 
 const SuccessPage = () => {
   return (
