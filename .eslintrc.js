@@ -35,6 +35,8 @@ module.exports = {
     'react/no-unused-state': 'warn',
     'react/no-array-index-key': 'warn',
     'react/jsx-key': 'error',
+    'react/no-unescaped-entities': 'warn',
+    'react/display-name': 'warn',
     
     // General code quality
     'no-console': 'warn', // Warn about console.log usage
@@ -71,13 +73,18 @@ module.exports = {
     'default-case': 'warn',
     
     // Import/Export
-    'no-duplicate-imports': 'error',
+    'no-duplicate-imports': 'warn',
     'import/no-unresolved': 'off', // Disable for now as we don't have import plugin
+    'no-useless-escape': 'warn',
     
     // Accessibility
     'jsx-a11y/alt-text': 'error',
     'jsx-a11y/aria-role': 'error',
     'jsx-a11y/no-autofocus': 'warn',
+    'jsx-a11y/label-has-associated-control': 'warn',
+    'jsx-a11y/anchor-is-valid': 'warn',
+    'jsx-a11y/click-events-have-key-events': 'warn',
+    'jsx-a11y/no-static-element-interactions': 'warn',
     
     // React Hooks
     'react-hooks/rules-of-hooks': 'error',

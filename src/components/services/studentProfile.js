@@ -1,27 +1,22 @@
-import createApiInstance from './apiInterceptor';
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
-const BASE_URL = `${BACKEND_BASE_URL}/api/v1/student-profiles`;
-const teacherApis = createApiInstance(BASE_URL);
+import apiClient from '../../utils/apiClient';
+import { API_CONFIG } from '../../config/api';
+import logger from '../../utils/logger';
+
+const BASE_URL = `${API_CONFIG.BASE_URL}/api/v1/student-profiles`;
 
 export const saveStudentProfile = async (profileData) => {
-  const token = localStorage.getItem('authToken');
   try {
-    const response = await fetch(`${BASE_URL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(profileData),
-    });
-    const data = await response.json();
-    console.log('data', data);
-    if (response.ok && data.headers.responseCode === 200) {
-      return { success: true, data: data.body.data };
-    } 
-      return { success: false, error: data.headers.customerMessage || 'Failed to save student profile' };
+    const response = await apiClient.post('/api/v1/student-profiles', profileData);
     
+    if (response.success) {
+      logger.apiSuccess('POST', 'student-profiles', 'Profile saved successfully');
+      return { success: true, data: response.data?.body?.data };
+    } else {
+      logger.apiError('POST', 'student-profiles', response.error);
+      return { success: false, error: response.error || 'Failed to save student profile' };
+    }
   } catch (error) {
+    logger.apiError('POST', 'student-profiles', error.message);
     return { success: false, error: error.message };
   }
 };

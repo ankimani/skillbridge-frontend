@@ -1,4 +1,4 @@
-import apiClient from '../../services/httpClient';
+import apiClient from '../../utils/apiClient';
 import { API_CONFIG } from '../../config/api';
 
 // Get auth profile from backend

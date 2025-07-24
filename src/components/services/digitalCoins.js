@@ -1,123 +1,108 @@
-import axios from 'axios';
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:8089';
-const API_BASE_URL = `${BACKEND_BASE_URL}/api/v1`;
+import apiClient from '../../utils/apiClient';
+import { API_CONFIG } from '../../config/api';
+import logger from '../../utils/logger';
 
 // Buy coins endpoint
-export const buyCoins = async (userId, payload, token) => {
+export const buyCoins = async (userId, payload) => {
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}/buy-coins/${userId}`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    return response.data?.body?.data;
+    const response = await apiClient.post(`/api/v1/buy-coins/${userId}`, payload);
+    
+    if (response.success) {
+      logger.apiSuccess('POST', `buy-coins/${userId}`, 'Coins purchased successfully');
+      return response.data?.body?.data;
+    } else {
+      logger.apiError('POST', `buy-coins/${userId}`, response.error);
+      throw new Error(response.error || 'Failed to buy coins');
+    }
   } catch (error) {
-    console.error('Failed to buy coins:', error);
+    logger.apiError('POST', `buy-coins/${userId}`, error.message);
     throw error;
   }
 };
 
 // Deduct coins endpoint
-export const deductCoins = async (userId, payload, token) => {
+export const deductCoins = async (userId, payload) => {
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}/deduct-coins/${userId}`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        validateStatus: function (status) {
-          // Consider 409 as a valid status (not an error)
-          return (status >= 200 && status < 300) || status === 409;
-        }
-      }
-    );
-    return response.data; // Return the full response data including headers
+    const response = await apiClient.post(`/api/v1/deduct-coins/${userId}`, payload);
+    
+    if (response.success || response.statusCode === 409) {
+      logger.apiSuccess('POST', `deduct-coins/${userId}`, 'Coins deducted successfully');
+      return response.data;
+    } else {
+      logger.apiError('POST', `deduct-coins/${userId}`, response.error);
+      throw new Error(response.error || 'Failed to deduct coins');
+    }
   } catch (error) {
-    console.error('Failed to deduct coins:', error);
+    logger.apiError('POST', `deduct-coins/${userId}`, error.message);
     throw error;
   }
 };
-export const deductCoinsClient = async (teacherId,userId, payload, token) => {
+export const deductCoinsClient = async (teacherId, userId, payload) => {
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}/deduct-coins/${userId}/student/${teacherId}`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        validateStatus: function (status) {
-          // Consider 409 as a valid status (not an error)
-          return status >= 200 && status < 500 || status === 409;
-        }
-      }
-    );
-    console.log('response data',response.data);
-    return response.data; // Return the full response data including headers
+    const response = await apiClient.post(`/api/v1/deduct-coins/${userId}/student/${teacherId}`, payload);
+    
+    if (response.success || response.statusCode === 409) {
+      logger.apiSuccess('POST', `deduct-coins/${userId}/student/${teacherId}`, 'Client coins deducted successfully');
+      return response.data;
+    } else {
+      logger.apiError('POST', `deduct-coins/${userId}/student/${teacherId}`, response.error);
+      throw new Error(response.error || 'Failed to deduct client coins');
+    }
   } catch (error) {
-    console.error('Failed to deduct coins:', error);
+    logger.apiError('POST', `deduct-coins/${userId}/student/${teacherId}`, error.message);
     throw error;
   }
 };
 // Get coin balance endpoint
-export const getCoinBalance = async (userId, token) => {
+export const getCoinBalance = async (userId) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/account/balance/${userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      }
-    );
-    return response.data?.body?.data;
+    const response = await apiClient.get(`/api/v1/account/balance/${userId}`);
+    
+    if (response.success) {
+      logger.apiSuccess('GET', `account/balance/${userId}`, 'Balance fetched successfully');
+      return response.data?.body?.data;
+    } else {
+      logger.apiError('GET', `account/balance/${userId}`, response.error);
+      throw new Error(response.error || 'Failed to fetch coin balance');
+    }
   } catch (error) {
-    console.error('Failed to fetch coin balance:', error);
+    logger.apiError('GET', `account/balance/${userId}`, error.message);
     throw error;
   }
 };
 
 // Calculate coin price endpoint
-export const calculateCoinPrice = async (coins, token) => {
+export const calculateCoinPrice = async (coins) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/pricing/calculate?coins=${coins}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      }
-    );
-    return response.data?.body?.data;
+    const response = await apiClient.get(`/api/v1/pricing/calculate?coins=${coins}`);
+    
+    if (response.success) {
+      logger.apiSuccess('GET', 'pricing/calculate', 'Price calculated successfully');
+      return response.data?.body?.data;
+    } else {
+      logger.apiError('GET', 'pricing/calculate', response.error);
+      throw new Error(response.error || 'Failed to calculate coin price');
+    }
   } catch (error) {
-    console.error('Failed to calculate coin price:', error);
+    logger.apiError('GET', 'pricing/calculate', error.message);
     throw error;
   }
 };
 
 // Get transactions endpoint
-export const getTransactions = async (userId, token) => {
+export const getTransactions = async (userId) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/transactions/${userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      }
-    );
-    return response.data?.body?.data;
+    const response = await apiClient.get(`/api/v1/transactions/${userId}`);
+    
+    if (response.success) {
+      logger.apiSuccess('GET', `transactions/${userId}`, 'Transactions fetched successfully');
+      return response.data?.body?.data;
+    } else {
+      logger.apiError('GET', `transactions/${userId}`, response.error);
+      throw new Error(response.error || 'Failed to fetch transactions');
+    }
   } catch (error) {
-    console.error('Failed to fetch transactions:', error);
+    logger.apiError('GET', `transactions/${userId}`, error.message);
     throw error;
   }
 };
