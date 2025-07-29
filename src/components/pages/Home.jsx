@@ -1,289 +1,485 @@
-import React from 'react';
-import Footer from '../shared/Footer';
+import React, { useEffect, useState } from 'react';
+import Footer from '../../features/shared/Footer';
 import { Link } from 'react-router-dom';
-import { UserPlus, DollarSign, MessageCircle, Users, GraduationCap, UserCircle, ArrowRight, Star, Award, Briefcase } from 'lucide-react';
+import { 
+  UserPlus, 
+  DollarSign, 
+  MessageCircle, 
+  Users, 
+  GraduationCap, 
+  UserCircle, 
+  ArrowRight, 
+  Star, 
+  Award, 
+  Briefcase,
+  CheckCircle,
+  Zap,
+  Shield,
+  Globe,
+  Clock,
+  TrendingUp,
+  Heart,
+  BookOpen,
+  Lightbulb,
+  Target,
+  Rocket,
+  Sparkles
+} from 'lucide-react';
 
 export default function Home() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  // Add custom styles for animations
+  const gradientAnimation = `
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .animate-gradient {
+      background-size: 200% 200%;
+      animation: gradient 3s ease infinite;
+    }
+  `;
+
   return (
-    <div className="bg-gradient-to-b from-slate-50 via-white to-slate-50 overflow-hidden">
-      {/* Hero Section */}
-      <div className="relative min-h-screen flex items-center">
-        {/* Background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-32 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-32 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-          <div className="text-center">
-            <div className="inline-flex items-center px-6 py-3 bg-blue-50 border border-blue-200 rounded-full text-blue-700 text-base font-medium mb-8 shadow-sm">
-              <Star className="w-5 h-5 mr-2 text-blue-500" />
-              Trusted by 10,000+ students & professionals
-            </div>
-            
-            <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-8 leading-tight">
-              <span className="block mb-6">The Professional Network That</span>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                Connects Expertise with Need
-              </span>
-            </h1>
-            
-            <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto">
-              SkillBridge enables professionals to find clients and students to access expert help through our innovative coin-based system.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-              <Link 
-                to="/register" 
-                className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center"
-              >
-                Join Now - It's Free
-                <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link 
-                to="/how-it-works" 
-                className="px-10 py-4 bg-white border border-gray-300 hover:border-blue-400 text-gray-700 hover:text-blue-600 rounded-lg font-semibold text-lg shadow-sm hover:shadow-md transition-all duration-300"
-              >
-                How It Works
-              </Link>
+    <>
+      <style>{gradientAnimation}</style>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+        {/* Hero Section */}
+        <div className="relative pt-12 pb-12 lg:pt-20 lg:pb-16">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-40 -right-32 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -bottom-40 -left-32 w-96 h-96 bg-gradient-to-br from-indigo-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-green-400/10 to-blue-400/10 rounded-full blur-2xl animate-pulse delay-500"></div>
+          </div>
+          
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              {/* Trust Badge */}
+              <div className={`inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-full text-blue-700 text-base font-semibold mb-6 shadow-lg backdrop-blur-sm transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                <Sparkles className="w-5 h-5 mr-2 text-blue-500 animate-pulse" />
+                Trusted by 50,000+ students & professionals worldwide
+              </div>
+              
+              {/* Main Heading */}
+              <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                <span className="block mb-4">Where Expertise Meets</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 animate-gradient">
+                  Opportunity
+                </span>
+              </h1>
+              
+              {/* Subtitle */}
+              <p className={`text-lg lg:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                SkillBridge revolutionizes how students connect with expert professionals. 
+                Our innovative coin-based system ensures quality connections while building a sustainable platform for learning and growth.
+              </p>
+              
+              {/* CTA Buttons */}
+              <div className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                <Link 
+                  to="/register" 
+                  className="group bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white px-10 py-4 rounded-2xl font-bold text-base shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 flex items-center"
+                >
+                  Start Your Journey - Free
+                  <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-2 transition-transform" />
+                </Link>
+                <Link 
+                  to="/how-it-works" 
+                  className="px-10 py-4 bg-white/80 backdrop-blur-sm border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-600 rounded-2xl font-bold text-base shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                >
+                  See How It Works
+                </Link>
+              </div>
+
+              {/* Quick Stats */}
+              <div className={`mt-12 grid grid-cols-3 gap-6 max-w-2xl mx-auto transition-all duration-700 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                {[
+                  { number: "50K+", label: "Active Users", icon: Users },
+                  { number: "95%", label: "Success Rate", icon: Star },
+                  { number: "24/7", label: "Support", icon: Clock }
+                ].map((stat, index) => (
+                  <div key={index} className="text-center">
+                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl mb-3 mx-auto">
+                      <stat.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{stat.number}</div>
+                    <div className="text-sm text-gray-600">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Value Proposition */}
-      <div className="bg-blue-50 py-24">
+      {/* Features Section */}
+      <div className="py-8 lg:py-16 bg-gradient-to-br from-white to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">
-            <div className="bg-white p-10 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 border border-blue-100">
-              <div className="mb-8">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-100 rounded-lg mb-6">
-                  <Briefcase className="w-7 h-7 text-blue-600" />
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              Why Choose <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">SkillBridge</span>?
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Experience the future of professional networking with our cutting-edge platform
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+            {/* For Professionals */}
+            <div className="group bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-blue-100 hover:border-blue-200 transform hover:-translate-y-2">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Briefcase className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                  For Professionals: <span className="text-blue-600">Find Clients & Build Your Practice</span>
-                </h2>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  For <span className="text-blue-600">Professionals</span>
+                </h3>
+                <p className="text-base text-gray-600 mb-6">
+                  Build your client base and grow your practice with our innovative platform
+                </p>
               </div>
-              <ul className="space-y-5 text-gray-700 text-lg">
-                <li className="flex items-start">
-                  <Briefcase className="w-6 h-6 text-blue-500 mr-4 mt-1" />
-                  <span>Showcase your expertise to potential clients</span>
-                </li>
-                <li className="flex items-start">
-                  <Users className="w-6 h-6 text-blue-500 mr-4 mt-1" />
-                  <span>Use coins to initiate contact with students needing your services</span>
-                </li>
-                <li className="flex items-start">
-                  <DollarSign className="w-6 h-6 text-blue-500 mr-4 mt-1" />
-                  <span>Negotiate service terms directly with clients</span>
-                </li>
+              <ul className="space-y-4 text-gray-700 text-base">
+                {[
+                  "Showcase your expertise to a global audience",
+                  "Use coins to initiate contact with potential clients",
+                  "Negotiate terms directly with students",
+                  "Build a sustainable practice with recurring clients"
+                ].map((feature, index) => (
+                  <li key={index} className="flex items-start group/item">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-1 group-hover/item:scale-110 transition-transform" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
               </ul>
+              <div className="mt-6">
+                <Link 
+                  to="/register" 
+                  className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+                >
+                  Join as Professional
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </div>
             </div>
             
-            <div className="bg-white p-10 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 border border-indigo-100">
-              <div className="mb-8">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-indigo-100 rounded-lg mb-6">
-                  <GraduationCap className="w-7 h-7 text-indigo-600" />
+            {/* For Students */}
+            <div className="group bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-purple-100 hover:border-purple-200 transform hover:-translate-y-2">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <GraduationCap className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                  For Students: <span className="text-indigo-600">Access Expert Help</span>
-                </h2>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  For <span className="text-purple-600">Students</span>
+                </h3>
+                <p className="text-base text-gray-600 mb-6">
+                  Access expert help and accelerate your learning journey
+                </p>
               </div>
-              <ul className="space-y-5 text-gray-700 text-lg">
-                <li className="flex items-start">
-                  <GraduationCap className="w-6 h-6 text-indigo-500 mr-4 mt-1" />
-                  <span>Find vetted professionals for your specific needs</span>
-                </li>
-                <li className="flex items-start">
-                  <DollarSign className="w-6 h-6 text-indigo-500 mr-4 mt-1" />
-                  <span>Purchase coins to maintain the platform and contact professionals</span>
-                </li>
-                <li className="flex items-start">
-                  <MessageCircle className="w-6 h-6 text-indigo-500 mr-4 mt-1" />
-                  <span>Connect directly with experts who can help you succeed</span>
-                </li>
+              <ul className="space-y-4 text-gray-700 text-base">
+                {[
+                  "Find vetted professionals for your specific needs",
+                  "Purchase coins to maintain platform quality",
+                  "Connect directly with experts who can help you succeed",
+                  "Get personalized guidance and mentorship"
+                ].map((feature, index) => (
+                  <li key={index} className="flex items-start group/item">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-1 group-hover/item:scale-110 transition-transform" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
               </ul>
+              <div className="mt-6">
+                <Link 
+                  to="/register" 
+                  className="inline-flex items-center text-purple-600 font-semibold hover:text-purple-700 transition-colors"
+                >
+                  Join as Student
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* How It Works */}
-      <div className="py-24 bg-white">
+      <div className="py-8 lg:py-16 bg-gradient-to-br from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              The SkillBridge System
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              How <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">SkillBridge</span> Works
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our coin system funds platform operations while connecting professionals with clients
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Our innovative three-step process connects expertise with opportunity
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {[
               {
                 icon: <UserPlus className="w-10 h-10 text-white" />,
-                bg: "bg-blue-600",
-                title: "1. Create Account",
-                description: "Join as a professional or student in minutes"
+                bg: "bg-gradient-to-br from-blue-500 to-blue-600",
+                title: "1. Create Your Profile",
+                description: "Join as a professional or student in minutes with our streamlined onboarding process"
               },
               {
                 icon: <DollarSign className="w-10 h-10 text-white" />,
-                bg: "bg-indigo-600",
+                bg: "bg-gradient-to-br from-purple-500 to-purple-600",
                 title: "2. Get Coins",
-                description: "Students purchase coins to contact professionals"
+                description: "Students purchase coins to contact professionals and maintain platform quality"
               },
               {
                 icon: <MessageCircle className="w-10 h-10 text-white" />,
-                bg: "bg-blue-700",
-                title: "3. Connect & Engage",
-                description: "Professionals use coins to respond and start conversations"
+                bg: "bg-gradient-to-br from-indigo-500 to-indigo-600",
+                title: "3. Connect & Succeed",
+                description: "Professionals use coins to respond and start meaningful conversations"
               }
             ].map((item, index) => (
-              <div key={index} className={`${item.bg} p-10 rounded-xl text-white shadow-md hover:shadow-lg transition-shadow duration-300`}>
-                <div className="w-16 h-16 rounded-lg bg-white/20 flex items-center justify-center mb-6 mx-auto">
+              <div key={index} className={`${item.bg} p-8 rounded-3xl text-white shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 group`}>
+                <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 text-center">{item.title}</h3>
-                <p className="text-lg text-center">{item.description}</p>
+                <h3 className="text-xl font-bold mb-4 text-center">{item.title}</h3>
+                <p className="text-base text-center leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
 
-          <div className="bg-blue-50 rounded-xl p-10 border border-blue-100 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-semibold text-gray-900 mb-6 text-center">About Our Coin System</h3>
-            <p className="text-lg text-gray-600 text-center">
-              Coins are used to initiate contact between professionals and students. 
-              The revenue from coin purchases funds platform operations, ensuring we can continue providing 
-              this valuable service to both professionals and students.
-            </p>
+          {/* Coin System Explanation */}
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-6 border border-blue-200 max-w-5xl mx-auto">
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl mb-4">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Sustainable Coin System</h3>
+              <p className="text-base text-gray-600 leading-relaxed max-w-4xl mx-auto">
+                Coins are used to initiate contact between professionals and students. 
+                This revenue model funds platform operations, ensuring we can continue providing 
+                this valuable service while maintaining high quality standards for both professionals and students.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Testimonials */}
-      <div className="py-24 bg-gray-50">
+      {/* Success Stories */}
+      <div className="py-8 lg:py-16 bg-gradient-to-br from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              How SkillBridge Transformed Learning & Careers
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              Success <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Stories</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Real stories from students who found expert help and professionals who grew their practice
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Real transformations from students and professionals who found success through SkillBridge
             </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {/* Student Testimonials */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Student Success */}
             <div className="space-y-8">
               <div className="flex items-center mb-8">
-                <GraduationCap className="w-8 h-8 text-indigo-600 mr-4" />
-                <h3 className="text-2xl font-semibold text-gray-900">Student Success Stories</h3>
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-4">
+                  <GraduationCap className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900">Student Achievements</h3>
               </div>
               
               {[
                 {
-                  name: "James, Computer Science Student",
-                  quote: "I was struggling with advanced algorithms until I connected with a senior developer through SkillBridge.",
-                  benefit: "Scored A+ in Algorithms course"
+                  name: "Alex Chen, Computer Science",
+                  quote: "I was struggling with advanced algorithms until I connected with a senior developer through SkillBridge. The personalized guidance helped me not only pass but excel in my course.",
+                  benefit: "Achieved A+ in Advanced Algorithms",
+                  avatar: "AC"
                 },
                 {
-                  name: "Emma, MBA Candidate",
-                  quote: "The business strategy consultant I found helped me craft a winning case competition presentation.",
-                  benefit: "Won national case competition"
+                  name: "Sarah Johnson, MBA Candidate",
+                  quote: "The business strategy consultant I found helped me craft a winning case competition presentation. We won the national competition!",
+                  benefit: "Won National Case Competition",
+                  avatar: "SJ"
                 }
               ].map((testimonial, index) => (
-                <div key={`student-${index}`} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                <div key={`student-${index}`} className="group bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-purple-200 transform hover:-translate-y-1">
                   <div className="flex items-center mb-4">
-                    <UserCircle className="w-8 h-8 text-indigo-600 mr-4" />
-                    <h4 className="font-semibold text-gray-900 text-lg">{testimonial.name}</h4>
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                      {testimonial.avatar}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-base">{testimonial.name}</h4>
+                      <div className="flex items-center text-purple-600 font-semibold text-sm">
+                        <Award className="w-4 h-4 mr-2" />
+                        {testimonial.benefit}
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-gray-700 mb-4 text-lg">"{testimonial.quote}"</p>
-                  <div className="flex items-center text-base text-indigo-600 font-medium">
-                    <Award className="w-5 h-5 mr-2" />
-                    {testimonial.benefit}
-                  </div>
+                  <p className="text-gray-700 text-base leading-relaxed">"{testimonial.quote}"</p>
                 </div>
               ))}
             </div>
 
-            {/* Professional Testimonials */}
+            {/* Professional Success */}
             <div className="space-y-8">
               <div className="flex items-center mb-8">
-                <Briefcase className="w-8 h-8 text-blue-600 mr-4" />
-                <h3 className="text-2xl font-semibold text-gray-900">Professional Achievements</h3>
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mr-4">
+                  <Briefcase className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900">Professional Growth</h3>
               </div>
               
               {[
                 {
-                  name: "Sarah, Math Tutor",
-                  quote: "SkillBridge helped me transition from classroom teaching to full-time tutoring.",
-                  benefit: "Built 50+ student client base"
+                  name: "Dr. Maria Rodriguez, Math Tutor",
+                  quote: "SkillBridge helped me transition from classroom teaching to full-time tutoring. I now have a thriving practice with over 50 regular students.",
+                  benefit: "Built 50+ Student Client Base",
+                  avatar: "MR"
                 },
                 {
-                  name: "Dr. Lee, Research Consultant",
-                  quote: "I've guided 12 students through successful thesis defenses using SkillBridge.",
-                  benefit: "100% thesis success rate"
+                  name: "Dr. James Lee, Research Consultant",
+                  quote: "I've guided 12 students through successful thesis defenses using SkillBridge. The platform's quality control ensures meaningful connections.",
+                  benefit: "100% Thesis Success Rate",
+                  avatar: "JL"
                 }
               ].map((testimonial, index) => (
-                <div key={`pro-${index}`} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                <div key={`pro-${index}`} className="group bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-1">
                   <div className="flex items-center mb-4">
-                    <UserCircle className="w-8 h-8 text-blue-600 mr-4" />
-                    <h4 className="font-semibold text-gray-900 text-lg">{testimonial.name}</h4>
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                      {testimonial.avatar}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-base">{testimonial.name}</h4>
+                      <div className="flex items-center text-blue-600 font-semibold text-sm">
+                        <TrendingUp className="w-4 h-4 mr-2" />
+                        {testimonial.benefit}
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-gray-700 mb-4 text-lg">"{testimonial.quote}"</p>
-                  <div className="flex items-center text-base text-blue-600 font-medium">
-                    <DollarSign className="w-5 h-5 mr-2" />
-                    {testimonial.benefit}
-                  </div>
+                  <p className="text-gray-700 text-base leading-relaxed">"{testimonial.quote}"</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          {/* Platform Stats */}
+          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { number: "10,000+", label: "Active Members", color: "text-blue-600" },
-              { number: "50,000+", label: "Hours of Guidance", color: "text-indigo-600" },
-              { number: "95%", label: "Satisfaction Rate", color: "text-blue-600" },
-              { number: "2,000+", label: "Successful Projects", color: "text-indigo-600" }
+              { number: "50,000+", label: "Active Members", icon: Users, color: "from-blue-500 to-blue-600" },
+              { number: "100,000+", label: "Hours of Guidance", icon: Clock, color: "from-purple-500 to-purple-600" },
+              { number: "95%", label: "Satisfaction Rate", icon: Heart, color: "from-green-500 to-green-600" },
+              { number: "5,000+", label: "Successful Projects", icon: Target, color: "from-indigo-500 to-indigo-600" }
             ].map((stat, index) => (
-              <div key={index} className="bg-white p-8 rounded-xl shadow-sm">
-                <p className={`text-3xl font-bold ${stat.color} mb-2`}>{stat.number}</p>
-                <p className="text-gray-600 text-base">{stat.label}</p>
+              <div key={index} className="group bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 text-center">
+                <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300`}>
+                  <stat.icon className="w-6 h-6 text-white" />
+                </div>
+                <p className={`text-3xl font-bold bg-gradient-to-br ${stat.color} bg-clip-text text-transparent mb-2`}>{stat.number}</p>
+                <p className="text-gray-600 text-base font-semibold">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* CTA */}
-      <div className="py-20 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-8">Ready to Join SkillBridge?</h2>
-          <p className="text-xl mb-10 max-w-3xl mx-auto">
-            Connect with clients or find expert help through our sustainable platform
+      {/* Features Grid */}
+      <div className="py-8 lg:py-16 bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              Platform <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Features</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Everything you need to succeed in your learning or professional journey
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                icon: Shield,
+                title: "Verified Professionals",
+                description: "All professionals are thoroughly vetted and background-checked for your safety"
+              },
+              {
+                icon: Globe,
+                title: "Global Network",
+                description: "Connect with experts from around the world, breaking geographical barriers"
+              },
+              {
+                icon: Clock,
+                title: "24/7 Availability",
+                description: "Access help whenever you need it, with professionals available around the clock"
+              },
+              {
+                icon: MessageCircle,
+                title: "Direct Communication",
+                description: "Chat directly with professionals through our secure messaging system"
+              },
+              {
+                icon: BookOpen,
+                title: "Specialized Expertise",
+                description: "Find experts in any field, from academic subjects to professional skills"
+              },
+              {
+                icon: Rocket,
+                title: "Fast Results",
+                description: "Get quick responses and see results faster than traditional methods"
+              }
+            ].map((feature, index) => (
+              <div key={index} className="group bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-2">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <feature.icon className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed text-sm">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Final CTA */}
+      <div className="py-8 lg:py-16 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 text-white relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+            Ready to Transform Your Future?
+          </h2>
+          <p className="text-lg lg:text-xl mb-8 max-w-4xl mx-auto opacity-90">
+            Join thousands of students and professionals who are already succeeding with SkillBridge
           </p>
-          <div className="flex flex-col sm:flex-row gap-5 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               to="/register" 
-              className="bg-white text-blue-600 hover:bg-gray-100 px-10 py-4 rounded-lg font-semibold text-lg shadow-md hover:shadow-lg transition-all duration-300"
+              className="group bg-white text-blue-600 hover:bg-gray-100 px-10 py-4 rounded-2xl font-bold text-base shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
             >
-              I'm a Professional
+              <Briefcase className="w-5 h-5 mr-3" />
+              Join as Professional
             </Link>
             <Link 
               to="/register" 
-              className="bg-indigo-800 hover:bg-indigo-900 text-white px-10 py-4 rounded-lg font-semibold text-lg shadow-md hover:shadow-lg transition-all duration-300"
+              className="group bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-10 py-4 rounded-2xl font-bold text-base shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
             >
-              I Need Expert Help
+              <GraduationCap className="w-5 h-5 mr-3" />
+              Get Expert Help
             </Link>
           </div>
+          <p className="mt-6 text-blue-100 text-base">
+            Start your journey today - it's completely free to join!
+          </p>
         </div>
       </div>
 
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }
