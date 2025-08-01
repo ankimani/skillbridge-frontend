@@ -215,21 +215,38 @@ const JobDisplay = () => {
 
           const token = localStorage.getItem('authToken');
           
-          data.body.data.jobs.forEach(async (job) => {
+          // Use Promise.allSettled to handle all applicant count requests
+          const applicantCountPromises = data.body.data.jobs.map(async (job) => {
             try {
               const count = await getJobApplicantCount(job.jobId, token);
-              if (isMounted) {
-                setApplicantCounts(prev => ({...prev, [job.jobId]: count}));
-                setCountsLoading(prev => ({...prev, [job.jobId]: false}));
-              }
+              return { jobId: job.jobId, count, success: true };
             } catch (err) {
               console.error(`Error fetching applicant count for job ${job.jobId}:`, err);
-              if (isMounted) {
-                setApplicantCounts(prev => ({...prev, [job.jobId]: 0}));
-                setCountsLoading(prev => ({...prev, [job.jobId]: false}));
-              }
+              return { jobId: job.jobId, count: 0, success: false };
             }
           });
+
+          const results = await Promise.allSettled(applicantCountPromises);
+          
+          if (isMounted) {
+            const newCounts = { ...applicantCounts };
+            const newLoadingStates = { ...countsLoading };
+            
+            results.forEach((result) => {
+              if (result.status === 'fulfilled') {
+                const { jobId, count, success } = result.value;
+                newCounts[jobId] = count;
+                newLoadingStates[jobId] = false;
+                
+                if (!success) {
+                  console.warn(`Using fallback count for job ${jobId} due to backend error`);
+                }
+              }
+            });
+            
+            setApplicantCounts(newCounts);
+            setCountsLoading(newLoadingStates);
+          }
         }
       } catch (err) {
         console.error('Error fetching jobs:', err);

@@ -234,6 +234,9 @@ const TeachersSubject = () => {
               <p className="mt-2 text-sm text-gray-500">
                 Select one skill at a time. You can add multiple skills by saving each one individually.
               </p>
+              <p className="mt-2 text-sm text-blue-600 font-medium">
+                ⚠️ You need to add at least 5 skills to proceed to the next step.
+              </p>
             </div>
 
             {savedSubjects.length > 0 && (

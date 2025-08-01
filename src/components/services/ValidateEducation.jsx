@@ -23,7 +23,12 @@ export default function ValidationEducation(formData) {
       errors.specialization = "Specialization is required";
     }
     if (!formData.score) {
-        errors.score = "Score is required";
+        errors.score = "GPA/Score is required";
+      } else {
+        const score = parseFloat(formData.score);
+        if (isNaN(score) || score < 1 || score > 4) {
+          errors.score = "GPA/Score must be between 1.0 and 4.0";
+        }
       }
   
     return errors;

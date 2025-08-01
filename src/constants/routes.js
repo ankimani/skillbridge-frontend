@@ -14,6 +14,7 @@ export const ROUTES = {
   STUDENT_PROFILE: '/student-profile',
   TEACHER_PROFILE: '/teacher-profile',
   PROFILE_INFO: '/profile-info',
+  STUDENT_BIO_DATA: '/student-bio-data',
   PROFILE_FORM: '/profileform',
   EDUCATION: '/education',
   EXPERIENCE: '/experience',

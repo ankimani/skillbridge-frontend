@@ -5,8 +5,8 @@
 /login /index.html 200
 /register /index.html 200
 /forgot-password /index.html 200
-/reset-password /index.html 200
-/verify-email /index.html 200
+/reset-password* /index.html 200
+/verify-email* /index.html 200
 /admin /index.html 200
 /studentdashboard /index.html 200
 /jobs /index.html 200

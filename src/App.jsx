@@ -215,6 +215,11 @@ function App() {
                 <ProfileInfoForm />
               </RouteGuard>
             } />
+            <Route path={ROUTES.STUDENT_BIO_DATA} element={
+              <RouteGuard allowedRoles={['ROLE_STUDENT']}>
+                <StudentBioData />
+              </RouteGuard>
+            } />
 
             {/* Protected Routes - Denied to ROLE_STUDENT and ROLE_ADMIN */}
             <Route path={ROUTES.JOBS} element={

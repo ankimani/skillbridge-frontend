@@ -418,12 +418,15 @@ const EducationForm = () => {
 
                 <div className="mb-5">
                   <label htmlFor="score" className="block text-sm font-medium text-gray-700 mb-1">
-                    Score/GPA <span className="text-red-500">*</span>
+                    GPA/Score <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     id="score"
                     name="score"
+                    min="1"
+                    max="4"
+                    step="0.1"
                     value={formData.score}
                     onChange={handleChange}
                     className={`block w-full px-4 py-2 rounded-md border ${
@@ -431,7 +434,7 @@ const EducationForm = () => {
                         ? "border-red-300 focus:ring-red-500 focus:border-red-500" 
                         : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                     } shadow-sm sm:text-sm`}
-                    placeholder="e.g. 3.8 GPA or 85%"
+                    placeholder="Enter GPA between 1.0 and 4.0 (e.g. 3.8)"
                   />
                   {errors.score && (
                     <p className="mt-1 text-sm text-red-600">{errors.score}</p>
