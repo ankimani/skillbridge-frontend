@@ -64,7 +64,7 @@ const LoginForm = () => {
                 };
                 navigate(tutorRoutes[user.stepName] || "/login");
             } else if (user.roleName === "ROLE_STUDENT") {
-                navigate(user.stepName === "PROFILE" ? "/student-bio-data" : "/studentdashboard");
+                navigate(user.stepName !== "COMPLETE" ? "/student-bio-data" : "/studentdashboard");
             } else {
                 navigate("/");
             }
